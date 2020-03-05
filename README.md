@@ -1,5 +1,3 @@
-# node-help
-
 [Node.js](https://nodejs.org/) is typically installed as a standalone container without any other external dependencies. Under the hood, Node runs within the same [V8 JavaScript Engine](https://v8.dev/) that the Google Chrome, Microsoft Edge and many other web browsers use. Node is also [non-blocking](https://nodejs.org/en/docs/guides/blocking-vs-non-blocking/) which essentially translates to a [substantial increase I/O throughput](https://nodejs.org/en/about/). A typical non-blocking web application will run much faster and use a lot less memory than their blocking counterparts. Node achieves this through what is referred to as an event-loop. Instead of spawning a new thread on every request, node's event-loop handles queued requests withing a single thread. There are, however many threads running within a single node process that handle things like file system I/O, [worker threads](https://nodejs.org/dist/latest/docs/api/worker_threads.html) created by the application itself for computational heavy operations, etc. These aspects of node, among other benefits such as server/browser code re-usability, feature specific hot deployments, etc. help make Node an ideal choice for the web.
 
 # Node.js Installation:
@@ -39,7 +37,7 @@ node -v
 ```
 
 ## Single Node Version
-To install/upgrade Node globally for accessibility accross all users, follow the steps below.
+To install/upgrade Node globally for accessibility across all users, follow the steps below.
 
 ### Global Node Install:
 ```sh
