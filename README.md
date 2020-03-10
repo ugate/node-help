@@ -158,7 +158,11 @@ redis-cli -a 'REDIS_PASSWORD_HERE' ping
 ```
 
 ## Using `nvm` + [Bamboo](https://www.atlassian.com/software/bamboo):
-When installing `node` on a Bamboo server, nvm should be installed locally using the previous install instructions. There are a few ways to configure a build, but one of the easiest is to create a __build task__ in Bamboo like the following (additional scripting added for illustration purposes only):
+When installing `node` on a Bamboo server, nvm should be installed locally using the previous install instructions. 
+<!-- `runuser --login bamboo --command '/opt/nvm_setup.sh'` -->
+
+### Build
+There are a few ways to configure a build, but one of the easiest is to create a __build task__ in Bamboo like the following (additional scripting added for illustration purposes only):
 
 ```sh
 env
