@@ -73,11 +73,11 @@ su bamboo
 # change dir to the (captured from the first few lines of the build log)
 cd /opt/application-data/bamboo/xml-data/build-dir/MYAPP-MASTER-JOB1
 # bamboo sets these env vars when it runs, so we need to add them manually here
-PATH=$PATH:/opt/.nvm/versions/node/v12.16.1/bin
+PATH=$PATH:/opt/.nvm/versions/node/v14.0.0/bin
 # init build
-/opt/.nvm/versions/node/v12.16.1/bin/npm install
+/opt/.nvm/versions/node/v14.0.0/bin/npm install
 # init packaging?
-/opt/.nvm/versions/node/v12.16.1/bin/npx snowpack
+/opt/.nvm/versions/node/v14.0.0/bin/npx snowpack
 # run app?
 node .
 ```
@@ -128,7 +128,7 @@ Environment=NODE_HOST=127.0.0.1
 Environment=NODE_PORT=%i
 Type=simple
 User=svc_admin
-ExecStart=node /opt/apps/myapp/index.js
+ExecStart=/opt/.nvm/versions/node/v14.0.0/bin/node /opt/apps/myapp/index.js
 Restart=on-failure
 RestartSec=5
 
@@ -149,15 +149,16 @@ WantedBy=multi-user.target
 
 Now all that's left is to install/run the service(s).
 ```sh
-sudo su
 # write the service contents
-vi /etc/systemd/system/myapp@.service
+sudo vi /etc/systemd/system/myapp@.service
 # write the target contents
-vi /etc/systemd/system/myapp.target
+sudo vi /etc/systemd/system/myapp.target
 # reload the systemd configuration
-systemctl daemon-reload
-# start the target (could also start each service individually: systemctl start myapp@9090.service)
-systemctl start myapp.target
+sudo systemctl daemon-reload
+# start the target (could also start each service individually: sudo systemctl start myapp@9090.service)
+sudo systemctl start myapp.target
+# check the status of the target
+sudo systemctl status myapp.target
 ```
 
 ## Redis installation:
