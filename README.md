@@ -128,7 +128,8 @@ Environment=NODE_HOST=127.0.0.1
 Environment=NODE_PORT=%i
 Type=simple
 User=svc_admin
-ExecStart=/opt/.nvm/versions/node/v14.0.0/bin/node /opt/apps/myapp/index.js
+# run with LTS node version (view available, exec: nvm ls)
+ExecStart=nvm run --lts=erbium /opt/apps/myapp/index.js
 Restart=on-failure
 RestartSec=5
 
