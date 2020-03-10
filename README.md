@@ -126,7 +126,7 @@ PartOf=myapp.target
 
 [Service]
 Environment=NODE_ENV=test
-Environment=NODE_HOST=127.0.0.1
+Environment=NODE_HOST=example.com
 Environment=NODE_PORT=%i
 Type=simple
 User=svc_admin
