@@ -96,7 +96,8 @@ Environment=NODE_ENV=test
 Environment=NODE_HOST=%H
 Environment=NODE_PORT=%i
 Type=simple
-User=bamboo
+# user should match the user where nvm was installed
+User=someuser
 WorkingDirectory=/opt/apps/myapp
 # run node using the node version defined in working dir .nvmrc
 ExecStart=/bin/bash -c '~/.nvm/nvm_exec node .'
