@@ -99,7 +99,7 @@ Type=simple
 User=svc_admin
 WorkingDirectory=/opt/apps/myapp
 # run node using the node version defined in working dir .nvmrc
-ExecStart=/bin/bash -c '${NVM_DIR}/nvm_exec .'
+ExecStart=/bin/bash -c '${NVM_DIR}/nvm_exec node .'
 Restart=on-failure
 RestartSec=5
 StandardError=syslog
