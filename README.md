@@ -1,35 +1,24 @@
 [Node.js](https://nodejs.org/) is typically installed as a standalone container without any other external dependencies. Under the hood, Node runs within the same [V8 JavaScript Engine](https://v8.dev/) that the Google Chrome, Microsoft Edge and many other web browsers use. Node is also [non-blocking](https://nodejs.org/en/docs/guides/blocking-vs-non-blocking/) which essentially translates to a [substantial increase I/O throughput](https://nodejs.org/en/about/). A typical non-blocking web application will run much faster and use a lot less memory than their blocking counterparts. Node achieves this through what is referred to as an event-loop. Instead of spawning a new thread on every request, node's event-loop handles queued requests withing a single thread. There are, however many threads running within a single node process that handle things like file system I/O, [worker threads](https://nodejs.org/dist/latest/docs/api/worker_threads.html) created by the application itself for computational heavy operations, etc. These aspects of node, among other benefits such as server/browser code re-usability, feature specific hot deployments, etc. help make Node an ideal choice for the web.
 
 # Node.js Installation:
-There are a few different ways to install Node.js. The most flexible is to use [nvm (Node Version Management)](https://github.com/nvm-sh/nvm) so that multiple versions of Node can run on a single box. The other is to install a single instance of Node globally for all users.
+There are a few different ways to install Node.js. The most flexible is to use [nvm (Node Version Management)](https://github.com/nvm-sh/nvm) so that multiple versions of Node can run on a single box (local user account). The other is to install a single instance of Node globally for all users.
 
 ## Multiple Node versions (using [nvm](https://github.com/nvm-sh/nvm)):
-There are two recommended ways to install [nvm](https://github.com/nvm-sh/nvm). One is to install `nvm` globally so that it is accessible to all users. The other is to install nvm using the local user account.
+Installing [nvm](https://github.com/nvm-sh/nvm) will allow switching back and forth between `node` versions from the command line. By default, `nvm` is installed locally under the current user account.
 
-### Global nvm (install/upgrade):
-```sh
-sudo su
-# install/upgrade C/C++ compiler for native Node modules
-yum install -y gcc-c++ make
-# ensure there is a bash profile
-touch ~/.bash_profile
-# installs/updates nvm (node version management, replace ### with the nvm version- e.g. 0.35.2)
-mkdir -p /usr/local/nvm && curl -o- https://raw.githubusercontent.com/creationix/nvm/v###/install.sh | NVM_DIR=/usr/local/nvm bash && source ~/.profile
-# install latest LTS node.js version
-nvm install lts/*
-# verify default node version
-node -v
-```
-
-### Local nvm (install/upgrade):
+### Local user nvm (install/upgrade):
 ```
 sudo su
 # install/upgrade C/C++ compiler for native Node modules
 yum install -y gcc-c++ make
+# optionally switch to the user acct where nvm will be installed
+# su someuser
 # ensure there is a bash profile
 touch ~/.bash_profile
-# installs/updates nvm (node version management, replace ### with the nvm version- e.g. 0.35.2)
-mkdir -p /usr/local/nvm && curl -o- https://raw.githubusercontent.com/creationix/nvm/v###/install.sh | NVM_DIR=/usr/local/nvm bash && source ~/.profile
+# installs/updates nvm (node version management)
+# replace ### with the nvm version- e.g. 0.35.2)
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v###/install.sh | bash
+# exit terminal and open a new session to activate nvm 
 # install latest LTS node.js version
 nvm install lts/*
 # verify default node version
@@ -57,6 +46,40 @@ rm /etc/yum.repos.d/nodesource*
 yum clean all
 curl --silent --location https://rpm.nodesource.com/setup_##.x | sudo bash -
 yum -y install nodejs
+```
+
+### Using `nvm` + [Bamboo](https://www.atlassian.com/software/bamboo):
+When installing `node` on a CI/Bamboo server, nvm should be installed locally using the instructions above. There are a few ways to configure a build, but one of the easiest is to create a __build task__ in Bamboo like the following (additional scripting added for illustration purposes only):
+
+```sh
+export NVM_DIR=/opt/.nvm
+export PATH=$PATH:/opt/.nvm/versions/node/v14.0.0/bin
+env
+which node
+which npm
+which npx
+npm install
+npm test
+npx snowpack
+```
+
+Troubleshooting can be performed on the integration/Bamboo server itself using ssh and executing the subsequent commands.
+
+```sh
+# remote login using svc_admin and switch user with root access
+sudo su
+# switch user to bamboo
+su bamboo
+# change dir to the (captured from the first few lines of the build log)
+cd /opt/application-data/bamboo/xml-data/build-dir/MYAPP-MASTER-JOB1
+# bamboo sets these env vars when it runs, so we need to add them manually here
+PATH=$PATH:/opt/.nvm/versions/node/v12.16.1/bin
+# init build
+/opt/.nvm/versions/node/v12.16.1/bin/npm install
+# init packaging?
+/opt/.nvm/versions/node/v12.16.1/bin/npx snowpack
+# run app?
+node .
 ```
 
 ## Database Connectivity
