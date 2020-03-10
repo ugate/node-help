@@ -115,8 +115,8 @@ As discussed earlier, the number of `node` processes for a particular app should
 
 > Care should be taken to ensure node is ran within a specified major version. Using `nvm run --lts=CODE_NAME` (where `CODE_NAME` is a valid value from [Node.js codenames](https://github.com/nodejs/Release/blob/master/CODENAMES.md)) ensures that the app will be constrained to the desired major node version (e.g. `fermium` would run the latest version of `14.x`).
 
-__`/etc/systemd/system/myapp@.service`__:
 ```sh
+# /etc/systemd/system/myapp@.service
 [Unit]
 Description="My Node App (port #%i)"
 Documentation=https://example.com
@@ -134,14 +134,15 @@ User=svc_admin
 ExecStart=nvm run --lts=fermium /opt/apps/myapp/index.js
 Restart=on-failure
 RestartSec=5
+StandardOutput=journal
 
 [Install]
 WantedBy=multi-user.target
 ```
 For convenience, a `myapp.target` file can be used so the target can be indicated instead of all of the `myapp@.service` instances (e.g. `systemctl start myapp@9090.service`, `systemctl start myapp@9091.service`, etc.).
 
-__`/etc/systemd/system/myapp.target`__:
 ```sh
+# /etc/systemd/system/myapp.target
 [Unit]
 Description="My Node App"
 Wants=myapp@9090.service myapp@9091.service myapp@9092.service myapp@9093.service
@@ -160,10 +161,13 @@ sudo vi /etc/systemd/system/myapp@.service
 sudo vi /etc/systemd/system/myapp.target
 # reload the systemd configuration
 sudo systemctl daemon-reload
+# enable the target/service
+sudo systemctl enable myapp
 # start the target (could also start each service individually: sudo systemctl start myapp@9090.service)
 sudo systemctl start myapp.target
-# check the status of the target
-sudo systemctl status myapp.target
+# check the status of the target/services
+systemctl status myapp.target
+systemctl status myapp@9090.service myapp@9091.service myapp@9092.service myapp@9093.service
 ```
 
 ## Redis installation:
