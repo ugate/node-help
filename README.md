@@ -140,6 +140,8 @@ WantedBy=multi-user.target
 ```
 For convenience, a `myapp.target` file can be used so the target can be indicated instead of all of the `myapp@.service` instances (e.g. `systemctl start myapp@9090.service`, `systemctl start myapp@9091.service`, etc.).
 
+> Ensure that the ports selected for an app are not already in use before assigning them to the target (e.g. execute `sudo ss -tulwn` to see the ports that are in use)
+
 __`/etc/systemd/system/myapp.target`__:
 ```sh
 [Unit]
