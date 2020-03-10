@@ -113,6 +113,8 @@ Each process instance should point to the same directory where the application/s
 ### Service Installation
 As discussed earlier, the number of `node` processes for a particular app should match the number of physical CPU cores for optimal performance. A service can be setup using `systemd`/`systemctl` using a single `/etc/systemd/system/myapp@.service` to achieve multiple app instances running on different ports. The `@` symbol indicates that there will be multiple instances of the same `systemd` _unit_ will be ran. The following service demonstrates the use of a single `.service` for all of the node processes that will be spawned.
 
+> Care should be taken to ensure node is ran within a specified major version. Using `nvm run --lts=CODE_NAME` (where `CODE_NAME` is a valid value from [Node.js codenames](https://github.com/nodejs/Release/blob/master/CODENAMES.md)) ensures that the app will be constrained to the desired major node version (e.g. `fermium` would run the latest version of `14.x`).
+
 __`/etc/systemd/system/myapp@.service`__:
 ```sh
 [Unit]
@@ -129,7 +131,7 @@ Environment=NODE_PORT=%i
 Type=simple
 User=svc_admin
 # run with LTS node version (view available, exec: nvm ls)
-ExecStart=nvm run --lts=erbium /opt/apps/myapp/index.js
+ExecStart=nvm run --lts=fermium /opt/apps/myapp/index.js
 Restart=on-failure
 RestartSec=5
 
