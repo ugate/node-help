@@ -96,10 +96,10 @@ Environment=NODE_ENV=test
 Environment=NODE_HOST=%H
 Environment=NODE_PORT=%i
 Type=simple
-User=svc_admin
+User=bamboo
 WorkingDirectory=/opt/apps/myapp
 # run node using the node version defined in working dir .nvmrc
-ExecStart=/bin/bash -c '${NVM_DIR}/nvm_exec node .'
+ExecStart=/bin/bash -c '~/.nvm/nvm_exec node .'
 Restart=on-failure
 RestartSec=5
 StandardError=syslog
