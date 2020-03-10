@@ -110,23 +110,54 @@ NODE_PORT=9091
 
 Each process instance should point to the same directory where the application/service is deployed. The application can review the set environmental variables via "process.env.NODE_ENV" and perform setup tasks accordingly.
 
-### POSIX
+### Service Installation
+As discussed earlier, the number of `node` processes for a particular app should match the number of physical CPU cores for optimal performance. A service can be setup using `systemd`/`systemctl` using a single `/etc/systemd/system/myapp@.service` to achieve multiple app instances running on different ports. The `@` symbol indicates that there will be multiple instances of the same `systemd` _unit_ will be ran. The following service demonstrates the use of a single `.service` for all of the node processes that will be spawned.
+
+__`/etc/systemd/system/myapp@.service`__:
 ```sh
 [Unit]
-Description=hello_env.js - making your environment variables rad
+Description="My Node App (port #%i)"
 Documentation=https://example.com
 After=network.target
 # Wants=redis.service
+PartOf=myapp.target
 
 [Service]
-Environment=NODE_PORT=3001
+Environment=NODE_ENV=test
+Environment=NODE_HOST=127.0.0.1
+Environment=NODE_PORT=%i
 Type=simple
-User=ubuntu
-ExecStart=/usr/bin/node /home/ubuntu/hello_env.js
+User=svc_admin
+ExecStart=node /opt/apps/myapp/index.js
 Restart=on-failure
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
+```
+For convenience, a `myapp.target` file can be used so the target can be indicated instead of all of the `myapp@.service` instances (e.g. `systemctl start myapp@9090.service`, `systemctl start myapp@9091.service`, etc.).
+
+__`/etc/systemd/system/myapp.target`__:
+```sh
+[Unit]
+Description="My Node App"
+Wants=myapp@9090.service myapp@9091.service myapp@9092.service myapp@9093.service
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Now all that's left is to install/run the service(s).
+```sh
+sudo su
+# write the service contents
+vi /etc/systemd/system/myapp@.service
+# write the target contents
+vi /etc/systemd/system/myapp.target
+# reload the systemd configuration
+systemctl daemon-reload
+# start the target (could also start each service individually: systemctl start myapp@9090.service)
+systemctl start myapp.target
 ```
 
 ## Redis installation:
