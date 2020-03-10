@@ -18,7 +18,8 @@ touch ~/.bash_profile
 # installs/updates nvm (node version management)
 # replace ### with the nvm version- e.g. 0.35.2)
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v###/install.sh | bash
-# exit terminal and open a new session to activate nvm 
+# activate nvm (alt reload terminal)
+source ~/.bashrc
 # install latest LTS node.js version
 nvm install lts/*
 # verify default node version
@@ -118,7 +119,7 @@ As discussed earlier, the number of `node` processes for a particular app should
 ```sh
 # /etc/systemd/system/myapp@.service
 [Unit]
-Description="My Node App (port #%i)"
+Description="My Node App (%H:%i)"
 Documentation=https://example.com
 After=network.target
 # Wants=redis.service
@@ -130,11 +131,12 @@ Environment=NODE_HOST=%H
 Environment=NODE_PORT=%i
 Type=simple
 User=svc_admin
-# run with LTS node version (view available, exec: nvm ls)
-ExecStart=nvm run --lts=fermium /opt/apps/myapp/index.js
+WorkingDirectory=/opt/apps/myapp
+# run node using the node version defined in working dir .nvmrc
+ExecStart=/bin/bash -c '${NVM_DIR}/nvm_exec .'
 Restart=on-failure
 RestartSec=5
-StandardOutput=journal
+StandardError=syslog
 
 [Install]
 WantedBy=multi-user.target
