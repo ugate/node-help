@@ -49,40 +49,6 @@ curl --silent --location https://rpm.nodesource.com/setup_##.x | sudo bash -
 yum -y install nodejs
 ```
 
-### Using `nvm` + [Bamboo](https://www.atlassian.com/software/bamboo):
-When installing `node` on a CI/Bamboo server, nvm should be installed locally using the instructions above. There are a few ways to configure a build, but one of the easiest is to create a __build task__ in Bamboo like the following (additional scripting added for illustration purposes only):
-
-```sh
-export NVM_DIR=/opt/.nvm
-export PATH=$PATH:/opt/.nvm/versions/node/v14.0.0/bin
-env
-which node
-which npm
-which npx
-npm install
-npm test
-npx snowpack
-```
-
-Troubleshooting can be performed on the integration/Bamboo server itself using ssh and executing the subsequent commands.
-
-```sh
-# remote login using svc_admin and switch user with root access
-sudo su
-# switch user to bamboo
-su bamboo
-# change dir to the (captured from the first few lines of the build log)
-cd /opt/application-data/bamboo/xml-data/build-dir/MYAPP-MASTER-JOB1
-# bamboo sets these env vars when it runs, so we need to add them manually here
-PATH=$PATH:/opt/.nvm/versions/node/v14.0.0/bin
-# init build
-/opt/.nvm/versions/node/v14.0.0/bin/npm install
-# init packaging?
-/opt/.nvm/versions/node/v14.0.0/bin/npx snowpack
-# run app?
-node .
-```
-
 ## Database Connectivity
 
 There are a few different options for database connectivity within Node for DBMS, NoSQL, GDB (Graph Database), etc.  When dealing with DBMS, many vendors like Oracle, MS SQL Server, etc. provide their own native and/or protocol-specific drivers. Native drivers provided by implementing vendors are the preferred method for DBMS connectivity within Node since they provide maximum performance and feature sets. However, there are some vendors that provide alternative ODBC drivers, OLE DB drivers, etc. which can provide a near-native experience when direct native driver implementations are not provided by a specific database vendor. Below are few of the most commonly used database drivers provided by various database vendors:
@@ -189,4 +155,37 @@ sudo systemctl restart redis.service
 # check status of redis service (ping should return PONG)
 sudo systemctl status redis.service
 redis-cli -a 'REDIS_PASSWORD_HERE' ping
+```
+
+## Using `nvm` + [Bamboo](https://www.atlassian.com/software/bamboo):
+When installing `node` on a Bamboo server, nvm should be installed locally using the previous install instructions. There are a few ways to configure a build, but one of the easiest is to create a __build task__ in Bamboo like the following (additional scripting added for illustration purposes only):
+
+```sh
+env
+echo 'node version:' && $NVM_DIR/nvm-exec node -v
+echo 'npm version:' && $NVM_DIR/nvm-exec npm -v
+$NVM_DIR/nvm-exec -v
+$NVM_DIR/nvm-exec npm -v
+$NVM_DIR/nvm-exec npm install
+$NVM_DIR/nvm-exec npm test
+$NVM_DIR/nvm-exec npx snowpack
+```
+
+Troubleshooting can be performed on the integration/Bamboo server itself using ssh and executing the subsequent commands.
+
+```sh
+# remote login using svc_admin and switch user with root access
+sudo su
+# switch user to bamboo
+su bamboo
+# change dir to the (captured from the first few lines of the build log)
+cd /opt/application-data/bamboo/xml-data/build-dir/MYAPP-MASTER-JOB1
+# bamboo sets these env vars when it runs, so we need to add them manually here
+PATH=$PATH:/opt/.nvm/versions/node/v14.0.0/bin
+# init build
+/opt/.nvm/versions/node/v14.0.0/bin/npm install
+# init packaging?
+/opt/.nvm/versions/node/v14.0.0/bin/npx snowpack
+# run app?
+node .
 ```
