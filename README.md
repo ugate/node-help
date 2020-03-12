@@ -165,28 +165,40 @@ When installing `node` on a Bamboo server, nvm should be installed locally using
 #!/bin/bash
 # Ensure node version in .nvmrc is installed (e.g. lts/iron or v20.0.0)
 # $NVM_DIR is expected to be present
-export NVMRC_RC=`cat $PWD/.nvmrc 2>/dev/null | sed 's/lts\///'`
-export NVMRC_VER=`echo $NVMRC_RC | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/v\1/p'`
-export NVMRC_LTS_VER=`[[ (-z "$NVMRC_RC") || (-n "$NVMRC_VER") ]] && echo '' || cat $NVM_DIR/alias/lts/$NVMRC_RC 2>/dev/null`
-export NVMRC_LTS_INSTALL=`[[ (-z "$NVMRC_VER") && (-z "$NVMRC_LTS_VER") && (-n "$NVMRC_RC") ]] && echo 1 || echo 0`
-export NVMRC_VER_INSTALL=`[[ (-n "$NVMRC_VER") && ("$NVMRC_LTS_INSTALL" == 0) ]] && echo 0 || echo 1`
-export NVMRC_VER_FOUND=`find $NVM_DIR/versions/node -type d -name "$NVMRC_VER" 2>/dev/null | wc -l`
-export NVMRC_VER_INSTALL=`[[ "$NVMRC_VER_FOUND" -ge 1 ]] && echo 0 || echo $NVMRC_VER_INSTALL`
-export NVMRC_LTS_INSTALL=`[[ ("$NVMRC_LTS_INSTALL" == 1) && ("$NVMRC_VER_INSTALL" != 1) ]] && echo 1 || echo 0`
-export NVMRC_VER_INSTALL=`[[ ("$NVMRC_LTS_INSTALL" != 1) && ("$NVMRC_VER_INSTALL" == 1) ]] && echo 1 || echo 0`
-[[ "$NVMRC_LTS_INSTALL" == 1 ]] && echo Executing: $NVM_DIR/nvm-exec install lts/$NVMRC_RC
-[[ "$NVMRC_LTS_INSTALL" == 1 ]] && $NVM_DIR/nvm-exec install lts/$NVMRC_RC
-[[ "$NVMRC_VER_INSTALL" == 1 ]] && echo Executing: $NVM_DIR/nvm-exec install $NVMRC_VER
-[[ "$NVMRC_VER_INSTALL" == 1 ]] && $NVM_DIR/nvm-exec install $NVMRC_VER
+# $1 The Node.js base directory for the app
+if [[ (-z "$1") || (! -d "$1") ]]
+then
+  echo "First argument $1 must be a valid Node.js app base dir"
+  exit 1
+else
+  echo "Using \$NVM_DIR=$NVM_DIR for $1/.nvmrc"
+fi
+NVMRC_RC=`cat $1/.nvmrc 2>/dev/null | sed 's/lts\///'`
+echo "Found .nvmrc version: $NVMRC_RC (excluding any \"lts/\" prefix)"
+NVMRC_VER=`echo $NVMRC_RC | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/v\1/p'`
+NVMRC_LTS_VER=`[[ (-z "$NVMRC_RC") || (-n "$NVMRC_VER") ]] && echo '' || cat $NVM_DIR/alias/lts/$NVMRC_RC 2>/dev/null`
+echo "Extracted .nvmrc version: $NVMRC_LTS_VER $NVMRC_VER"
+[[ (-n "$NVMRC_LTS_VER") ]] && echo "Found installed Node.js (LTS) version: $NVMRC_LTS_VER"
+NVMRC_LTS_INSTALL=`[[ (-z "$NVMRC_VER") && (-z "$NVMRC_LTS_VER") && (-n "$NVMRC_RC") ]] && echo 1 || echo 0`
+NVMRC_VER_INSTALL=`[[ (-n "$NVMRC_VER") && ("$NVMRC_LTS_INSTALL" == 0) ]] && echo 1 || echo 0`
+NVMRC_VER_FOUND=`find $NVM_DIR/versions/node -type d -name "$NVMRC_VER" 2>/dev/null | wc -l`
+[[ "$NVMRC_VER_FOUND" -ge 1 ]] && echo "Found installed Node.js version: $NVMRC_VER"
+NVMRC_VER_INSTALL=`[[ "$NVMRC_VER_FOUND" -ge 1 ]] && echo 0 || echo $NVMRC_VER_INSTALL`
+NVMRC_LTS_INSTALL=`[[ ("$NVMRC_LTS_INSTALL" == 1) && ("$NVMRC_VER_INSTALL" != 1) ]] && echo 1 || echo 0`
+NVMRC_VER_INSTALL=`[[ ("$NVMRC_LTS_INSTALL" != 1) && ("$NVMRC_VER_INSTALL" == 1) ]] && echo 1 || echo 0`
+[[ "$NVMRC_LTS_INSTALL" == 1 ]] && echo "Executing: $NVM_DIR/nvm-exec install lts/$NVMRC_RC"
+[[ "$NVMRC_LTS_INSTALL" == 1 ]] && `$NVM_DIR/nvm-exec install lts/$NVMRC_RC`
+[[ "$NVMRC_VER_INSTALL" == 1 ]] && echo "Executing: $NVM_DIR/nvm-exec install $NVMRC_VER"
+[[ "$NVMRC_VER_INSTALL" == 1 ]] && `$NVM_DIR/nvm-exec install $NVMRC_VER`
 ```
 Assuming the file resides at `/opt/nvmrc.sh` it can be setup to be executed by any user and ran from the project's base directory where the `.nvmrc` file resides:
 ```sh
+# write the nvmrc.sh contents from above script
+sudo vi /opt/nvmrc.sh
 # add execution privleges for all users
 sudo chmod a+x /opt/nvmrc.sh
-
-# to run...
-cd /opt/apps/myapp
-/opt/nvmrc.sh
+# to run, pass the base dir to the node app
+# /opt/nvmrc.sh /opt/apps/myapp
 ```
 
 <!-- 
