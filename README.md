@@ -165,7 +165,7 @@ When installing `node` on a Bamboo server, nvm should be installed locally using
 #!/bin/bash
 # Ensure node version in .nvmrc is installed (e.g. lts/iron or v20.0.0)
 # $NVM_DIR is expected to be present
-export NVMRC_RC=`cat .nvmrc 2>/dev/null | sed 's/lts\///'`
+export NVMRC_RC=`cat $PWD/.nvmrc 2>/dev/null | sed 's/lts\///'`
 export NVMRC_VER=`echo $NVMRC_RC | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/v\1/p'`
 export NVMRC_LTS_VER=`[[ (-z "$NVMRC_RC") || (-n "$NVMRC_VER") ]] && echo '' || cat $NVM_DIR/alias/lts/$NVMRC_RC 2>/dev/null`
 export NVMRC_LTS_INSTALL=`[[ (-z "$NVMRC_VER") && (-z "$NVMRC_LTS_VER") && (-n "$NVMRC_RC") ]] && echo 1 || echo 0`
@@ -223,17 +223,7 @@ $NVM_DIR/nvm-exec npx snowpack
 
 # Ensure node version in .nvmrc is installed (e.g. lts/iron or v20.0.0)
 export NVM_DIR=~/.nvm
-export BLD_NODE_RC=`cat .nvmrc 2>/dev/null | sed 's/lts\///'`
-export BLD_NODE_VER=`echo $BLD_NODE_RC | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/v\1/p'`
-export BLD_NODE_LTS_VER=`[[ (-z "$BLD_NODE_RC") || (-n "$BLD_NODE_VER") ]] && echo '' || cat $NVM_DIR/alias/lts/$BLD_NODE_RC 2>/dev/null`
-export BLD_NODE_LTS_INSTALL=`[[ (-z "$BLD_NODE_VER") && (-z "$BLD_NODE_LTS_VER") && (-n "$BLD_NODE_RC") ]] && echo 1 || echo 0`
-export BLD_NODE_VER_INSTALL=`[[ (-n "$BLD_NODE_VER") && ("$BLD_NODE_LTS_INSTALL" == 0) ]] && echo 0 || echo 1`
-export BLD_NODE_VER_FOUND=`find $NVM_DIR/versions/node -type d -name "$BLD_NODE_VER" 2>/dev/null | wc -l`
-export BLD_NODE_VER_INSTALL=`[[ "$BLD_NODE_VER_FOUND" -ge 1 ]] && echo 0 || echo $BLD_NODE_VER_INSTALL`
-export BLD_NODE_LTS_INSTALL=`[[ ("$BLD_NODE_LTS_INSTALL" == 1) && ("$BLD_NODE_VER_INSTALL" != 1) ]] && echo 1 || echo 0`
-export BLD_NODE_VER_INSTALL=`[[ ("$BLD_NODE_LTS_INSTALL" != 1) && ("$BLD_NODE_VER_INSTALL" == 1) ]] && echo 1 || echo 0`
-[[ "$BLD_NODE_LTS_INSTALL" == 1 ]] && $NVM_DIR/nvm-exec install lts/$BLD_NODE_RC
-[[ "$BLD_NODE_VER_INSTALL" == 1 ]] && $NVM_DIR/nvm-exec install $BLD_NODE_VER
+/opt/nvmrc.sh
 ```
 
 Troubleshooting can be performed on the integration/Bamboo server itself using ssh and executing the subsequent commands.
