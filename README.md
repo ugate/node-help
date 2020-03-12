@@ -193,7 +193,7 @@ $NVM_DIR/nvm-exec npm test
 $NVM_DIR/nvm-exec npx snowpack
 
 # Ensure node version in .nvmrc is installed (e.g. lts/iron or v20.0.0)
-export NVM_DIR=/opt/.nvm
+export NVM_DIR=~/.nvm
 export BLD_NODE_RC=`cat .nvmrc 2>/dev/null | sed 's/lts\///'`
 export BLD_NODE_VER=`echo $BLD_NODE_RC | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/v\1/p'`
 export BLD_NODE_LTS_VER=`[[ (-z "$BLD_NODE_RC") || (-n "$BLD_NODE_VER") ]] && echo '' || cat $NVM_DIR/alias/lts/$BLD_NODE_RC 2>/dev/null`
