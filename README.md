@@ -191,7 +191,7 @@ NVMRC_VER_INSTALL=`[[ ("$NVMRC_LTS_INSTALL" != 1) && ("$NVMRC_VER_INSTALL" == 1)
 [[ "$NVMRC_VER_INSTALL" == 1 ]] && echo "Executing: $NVM_DIR/nvm-exec install $NVMRC_VER"
 [[ "$NVMRC_VER_INSTALL" == 1 ]] && `$NVM_DIR/nvm-exec install $NVMRC_VER`
 ```
-Assuming the file resides at `/opt/nvmrc.sh` it can be setup to be executed by any user and ran from the project's base directory where the `.nvmrc` file resides:
+Write the `nvmrc.sh` script onto the Bamboo server and the deployment servers.
 ```sh
 # write the nvmrc.sh contents from above script
 sudo vi /opt/nvmrc.sh
