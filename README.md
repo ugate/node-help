@@ -77,7 +77,7 @@ NODE_PORT=9091
 
 Each process instance should point to the same directory where the application/service is deployed. The application can review the set environmental variables via "process.env.NODE_ENV" and perform setup tasks accordingly.
 
-### Service Installation
+### Service Installation<sub id="service"></sub>
 As discussed earlier, the number of `node` processes for a particular app should match the number of physical CPU cores for optimal performance. A service can be setup using `systemd`/`systemctl` using a single `/etc/systemd/system/myapp@.service` to achieve multiple app instances running on different ports. The `@` symbol indicates that there will be multiple instances of the same `systemd` _unit_ will be ran. The following service demonstrates the use of a single `.service` for all of the node processes that will be spawned (see [`systemd` specifiers](https://www.freedesktop.org/software/systemd/man/systemd.unit.html#Specifiers)).
 
 > The `WorkingDirectory` should contain a [`.nvmrc` file](https://github.com/nvm-sh/nvm#nvmrc) that contains `lts/CODE_NAME` where `CODE_NAME` is a valid value from [Node.js codenames](https://github.com/nodejs/Release/blob/master/CODENAMES.md). This will ensure that the app will be constrained to the desired major node version (e.g. `lts/fermium` would run the latest version of `14.x`).
@@ -159,7 +159,36 @@ redis-cli -a 'REDIS_PASSWORD_HERE' ping
 ```
 
 ## Using `nvm` + [Bamboo](https://www.atlassian.com/software/bamboo):
-When installing `node` on a Bamboo server, nvm should be installed locally using the previous install instructions. 
+When installing `node` on a Bamboo server, nvm should be installed locally using the previous install instructions. As described in the [Service Installation section](#service), each Node.js app should contain a `.nvmrc` file that indicates the _version_ or [Node.js codename](https://github.com/nodejs/Release/blob/master/CODENAMES.md) that will be used by Bamboo. The following script can be used to dynamically detect and install the node version used by the app based upon the project's `.nvmrc` file. It will determine if the node version is already installed. When it is not, it will run the `nvm` command to install it.
+
+```sh
+#!/bin/bash
+# Ensure node version in .nvmrc is installed (e.g. lts/iron or v20.0.0)
+# $NVM_DIR is expected to be present
+export NVMRC_RC=`cat .nvmrc 2>/dev/null | sed 's/lts\///'`
+export NVMRC_VER=`echo $NVMRC_RC | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/v\1/p'`
+export NVMRC_LTS_VER=`[[ (-z "$NVMRC_RC") || (-n "$NVMRC_VER") ]] && echo '' || cat $NVM_DIR/alias/lts/$NVMRC_RC 2>/dev/null`
+export NVMRC_LTS_INSTALL=`[[ (-z "$NVMRC_VER") && (-z "$NVMRC_LTS_VER") && (-n "$NVMRC_RC") ]] && echo 1 || echo 0`
+export NVMRC_VER_INSTALL=`[[ (-n "$NVMRC_VER") && ("$NVMRC_LTS_INSTALL" == 0) ]] && echo 0 || echo 1`
+export NVMRC_VER_FOUND=`find $NVM_DIR/versions/node -type d -name "$NVMRC_VER" 2>/dev/null | wc -l`
+export NVMRC_VER_INSTALL=`[[ "$NVMRC_VER_FOUND" -ge 1 ]] && echo 0 || echo $NVMRC_VER_INSTALL`
+export NVMRC_LTS_INSTALL=`[[ ("$NVMRC_LTS_INSTALL" == 1) && ("$NVMRC_VER_INSTALL" != 1) ]] && echo 1 || echo 0`
+export NVMRC_VER_INSTALL=`[[ ("$NVMRC_LTS_INSTALL" != 1) && ("$NVMRC_VER_INSTALL" == 1) ]] && echo 1 || echo 0`
+[[ "$NVMRC_LTS_INSTALL" == 1 ]] && echo Executing: $NVM_DIR/nvm-exec install lts/$NVMRC_RC
+[[ "$NVMRC_LTS_INSTALL" == 1 ]] && $NVM_DIR/nvm-exec install lts/$NVMRC_RC
+[[ "$NVMRC_VER_INSTALL" == 1 ]] && echo Executing: $NVM_DIR/nvm-exec install $NVMRC_VER
+[[ "$NVMRC_VER_INSTALL" == 1 ]] && $NVM_DIR/nvm-exec install $NVMRC_VER
+```
+Assuming the file resides at `/opt/nvmrc.sh` it can be setup to be executed by any user and ran from the project's base directory where the `.nvmrc` file resides:
+```sh
+# add execution privleges for all users
+sudo chmod a+x /opt/nvmrc.sh
+
+# to run...
+cd /opt/apps/myapp
+/opt/nvmrc.sh
+```
+
 <!-- 
 ```sh
 # /opt/nvm_setup.sh
