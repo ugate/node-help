@@ -196,12 +196,15 @@ $NVM_DIR/nvm-exec npx snowpack
 export NVM_DIR=/opt/.nvm
 export BLD_NODE_RC=`cat .nvmrc 2>/dev/null | sed 's/lts\///'`
 export BLD_NODE_VER=`echo $BLD_NODE_RC | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/v\1/p'`
-export BLD_NODE_LTS_VER=`test -z $BLD_NODE_RC -o -n $BLD_NODE_VER && echo '' || cat $NVM_DIR/alias/lts/$BLD_NODE_RC 2>/dev/null`
-export BLD_NODE_LTS_INSTALL=`test -z $BLD_NODE_VER -a -z $BLD_NODE_LTS_VER -a -n $BLD_NODE_RC && echo 1 || echo 0`
-export BLD_NODE_VER_INSTALL=`test -n $BLD_NODE_VER -a $BLD_NODE_LTS_INSTALL -eq 0 && echo 0 || echo 1`
-export BLD_NODE_VER_INSTALL=`find $NVM_DIR/versions/node -type d -name $BLD_NODE_VER | test `wc -l` -ge 1 && echo 0 || echo $BLD_NODE_VER_INSTALL`
-test $BLD_NODE_LTS_INSTALL -eq 1 && $NVM_DIR/nvm-exec install lts/$BLD_NODE_RC
-test $BLD_NODE_VER_INSTALL -eq 1 && $NVM_DIR/nvm-exec install $BLD_NODE_VER
+export BLD_NODE_LTS_VER=`[[ (-z "$BLD_NODE_RC") || (-n "$BLD_NODE_VER") ]] && echo '' || cat $NVM_DIR/alias/lts/$BLD_NODE_RC 2>/dev/null`
+export BLD_NODE_LTS_INSTALL=`[[ (-z "$BLD_NODE_VER") && (-z "$BLD_NODE_LTS_VER") && (-n "$BLD_NODE_RC") ]] && echo 1 || echo 0`
+export BLD_NODE_VER_INSTALL=`[[ (-n "$BLD_NODE_VER") && ("$BLD_NODE_LTS_INSTALL" == 0) ]] && echo 0 || echo 1`
+export BLD_NODE_VER_FOUND=`find $NVM_DIR/versions/node -type d -name "$BLD_NODE_VER" 2>/dev/null | wc -l`
+export BLD_NODE_VER_INSTALL=`[[ "$BLD_NODE_VER_FOUND" -ge 1 ]] && echo 0 || echo $BLD_NODE_VER_INSTALL`
+export BLD_NODE_LTS_INSTALL=`[[ ("$BLD_NODE_LTS_INSTALL" == 1) && ("$BLD_NODE_VER_INSTALL" != 1) ]] && echo 1 || echo 0`
+export BLD_NODE_VER_INSTALL=`[[ ("$BLD_NODE_LTS_INSTALL" != 1) && ("$BLD_NODE_VER_INSTALL" == 1) ]] && echo 1 || echo 0`
+[[ "$BLD_NODE_LTS_INSTALL" == 1 ]] && $NVM_DIR/nvm-exec install lts/$BLD_NODE_RC
+[[ "$BLD_NODE_VER_INSTALL" == 1 ]] && $NVM_DIR/nvm-exec install $BLD_NODE_VER
 ```
 
 Troubleshooting can be performed on the integration/Bamboo server itself using ssh and executing the subsequent commands.
