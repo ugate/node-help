@@ -224,7 +224,9 @@ runuser --login bamboo --command '/opt/nvm_setup.sh'`
 There are a few ways to configure a build, but one of the easiest is to create a __build task__ in Bamboo like the following (additional scripting added for illustration purposes only):
 
 ```sh
+export NVM_DIR=~/.nvm
 env
+/opt/nvmrc.sh /opt/apps/myapp
 echo 'node version:' && $NVM_DIR/nvm-exec node -v
 echo 'npm version:' && $NVM_DIR/nvm-exec npm -v
 $NVM_DIR/nvm-exec -v
@@ -232,10 +234,6 @@ $NVM_DIR/nvm-exec npm -v
 $NVM_DIR/nvm-exec npm install
 $NVM_DIR/nvm-exec npm test
 $NVM_DIR/nvm-exec npx snowpack
-
-# Ensure node version in .nvmrc is installed (e.g. lts/iron or v20.0.0)
-export NVM_DIR=~/.nvm
-/opt/nvmrc.sh
 ```
 
 Troubleshooting can be performed on the integration/Bamboo server itself using ssh and executing the subsequent commands.
