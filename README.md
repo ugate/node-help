@@ -163,12 +163,13 @@ When installing `node` on a Bamboo server, nvm should be installed locally using
 
 Write the [`nvmrc.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/nvmrc.sh) onto the Bamboo server and the deployment servers.
 ```sh
-# write the nvmrc.sh contents from above script
+# write the nvmrc.sh contents from the nvmrc.sh script
 sudo vi /opt/nvmrc.sh
 # add execution privleges for all users
 sudo chmod a+x /opt/nvmrc.sh
-# to run, pass the base dir to the node app
-# /opt/nvmrc.sh /opt/apps/myapp
+# to run, change to the base of the node app and exec nvmrc.sh
+# cd /opt/apps/myapp
+# /opt/nvmrc.sh
 ```
 
 <!-- 
@@ -196,7 +197,7 @@ There are a few ways to configure a build, but one of the easiest is to create a
 ```sh
 export NVM_DIR=~/.nvm
 env
-/opt/nvmrc.sh /opt/apps/myapp
+/opt/nvmrc.sh
 echo 'node version:' && $NVM_DIR/nvm-exec node -v
 echo 'npm version:' && $NVM_DIR/nvm-exec npm -v
 $NVM_DIR/nvm-exec -v
