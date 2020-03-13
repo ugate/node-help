@@ -159,39 +159,9 @@ redis-cli -a 'REDIS_PASSWORD_HERE' ping
 ```
 
 ## Using `nvm` + [Bamboo](https://www.atlassian.com/software/bamboo):
-When installing `node` on a Bamboo server, nvm should be installed locally using the previous install instructions. As described in the [Service Installation section](#service), each Node.js app should contain a `.nvmrc` file that indicates the _version_ or [Node.js codename](https://github.com/nodejs/Release/blob/master/CODENAMES.md) that will be used by Bamboo. The following script can be used to dynamically detect and install the node version used by the app based upon the project's `.nvmrc` file. It will determine if the node version is already installed. When it is not, it will run the `nvm` command to install it.
+When installing `node` on a Bamboo server, nvm should be installed locally using the previous install instructions. As described in the [Service Installation section](#service), each Node.js app should contain a `.nvmrc` file that indicates the _version_ or [Node.js codename](https://github.com/nodejs/Release/blob/master/CODENAMES.md) that will be used by Bamboo. The [`nvmrc.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/nvmrc.sh) can be used to dynamically detect and install the node version used by an app based upon the project's `.nvmrc` file. It will determine if the node version is already installed. When it is not, it will run the `nvm` command to install it.
 
-```sh
-#!/bin/bash
-# Ensure node version in .nvmrc is installed (e.g. lts/iron or v20.0.0)
-# $NVM_DIR is expected to be present
-# $1 The Node.js base directory for the app
-if [[ (-z "$1") || (! -d "$1") ]]
-then
-  echo "First argument $1 must be a valid Node.js app base dir"
-  exit 1
-else
-  echo "Using \$NVM_DIR=$NVM_DIR for $1/.nvmrc"
-fi
-NVMRC_RC=`cat $1/.nvmrc 2>/dev/null | sed 's/lts\///'`
-echo "Found .nvmrc version: $NVMRC_RC (excluding any \"lts/\" prefix)"
-NVMRC_VER=`echo $NVMRC_RC | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/v\1/p'`
-NVMRC_LTS_VER=`[[ (-z "$NVMRC_RC") || (-n "$NVMRC_VER") ]] && echo '' || cat $NVM_DIR/alias/lts/$NVMRC_RC 2>/dev/null`
-echo "Extracted .nvmrc version: $NVMRC_LTS_VER $NVMRC_VER"
-[[ (-n "$NVMRC_LTS_VER") ]] && echo "Found installed Node.js (LTS) version: $NVMRC_LTS_VER"
-NVMRC_LTS_INSTALL=`[[ (-z "$NVMRC_VER") && (-z "$NVMRC_LTS_VER") && (-n "$NVMRC_RC") ]] && echo 1 || echo 0`
-NVMRC_VER_INSTALL=`[[ (-n "$NVMRC_VER") && ("$NVMRC_LTS_INSTALL" == 0) ]] && echo 1 || echo 0`
-NVMRC_VER_FOUND=`find $NVM_DIR/versions/node -type d -name "$NVMRC_VER" 2>/dev/null | wc -l`
-[[ "$NVMRC_VER_FOUND" -ge 1 ]] && echo "Found installed Node.js version: $NVMRC_VER"
-NVMRC_VER_INSTALL=`[[ "$NVMRC_VER_FOUND" -ge 1 ]] && echo 0 || echo $NVMRC_VER_INSTALL`
-NVMRC_LTS_INSTALL=`[[ ("$NVMRC_LTS_INSTALL" == 1) && ("$NVMRC_VER_INSTALL" != 1) ]] && echo 1 || echo 0`
-NVMRC_VER_INSTALL=`[[ ("$NVMRC_LTS_INSTALL" != 1) && ("$NVMRC_VER_INSTALL" == 1) ]] && echo 1 || echo 0`
-[[ "$NVMRC_LTS_INSTALL" == 1 ]] && echo "Executing: $NVM_DIR/nvm-exec install lts/$NVMRC_RC"
-[[ "$NVMRC_LTS_INSTALL" == 1 ]] && `$NVM_DIR/nvm-exec install lts/$NVMRC_RC`
-[[ "$NVMRC_VER_INSTALL" == 1 ]] && echo "Executing: $NVM_DIR/nvm-exec install $NVMRC_VER"
-[[ "$NVMRC_VER_INSTALL" == 1 ]] && `$NVM_DIR/nvm-exec install $NVMRC_VER`
-```
-Write the `nvmrc.sh` script onto the Bamboo server and the deployment servers.
+Write the [`nvmrc.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/nvmrc.sh) onto the Bamboo server and the deployment servers.
 ```sh
 # write the nvmrc.sh contents from above script
 sudo vi /opt/nvmrc.sh
