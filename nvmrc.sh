@@ -1,14 +1,16 @@
 #!/bin/bash
 # Ensure node version in .nvmrc is installed (e.g. lts/iron or v20.0.0)
 # $NVM_DIR should be already set before running (usually auto loaded from profile)
+# $1 Node.js app base directory (defaults to $PWD)
 source ~/.bashrc
 echo "Using \$NVM_DIR=$NVM_DIR for $PWD/.nvmrc"
-NVMRC_RC=`cat $PWD/.nvmrc 2>/dev/null | sed 's/lts\///'`
+NVMRC_APP_DIR=`[[ (-n "$1") ]] && echo $1 || echo $PWD`
+NVMRC_RC=`cat $NVMRC_APP_DIR/.nvmrc 2>/dev/null | sed 's/lts\///'`
 if [[ (-z "$NVMRC_RC") ]]; then
-  echo "No Node.js version or LTS codename in base app directory: $PWD/.nvmrc"
+  echo "No Node.js version or LTS codename in base app directory: $NVMRC_APP_DIR/.nvmrc"
   exit 1
 fi
-echo "Found $PWD/.nvmrc version: $NVMRC_RC (excluding any \"lts/\" prefix)"
+echo "Found $NVMRC_APP_DIR/.nvmrc version: $NVMRC_RC (excluding any \"lts/\" prefix)"
 NVMRC_VER=`echo $NVMRC_RC | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/v\1/p'`
 NVMRC_LTS_NAME=`[[ (-z "$NVMRC_VER") ]] && echo $NVMRC_RC || echo ''`
 NVMRC_LTS_VER=`[[ (-n "$NVMRC_LTS_NAME") ]] && cat $NVM_DIR/alias/lts/$NVMRC_LTS_NAME 2>/dev/null || echo ''`
