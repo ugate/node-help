@@ -167,9 +167,10 @@ Write the [`nvmrc.sh` script](https://raw.githubusercontent.com/ugate/node-help/
 sudo vi /opt/nvmrc.sh
 # add execution privleges for all users
 sudo chmod a+x /opt/nvmrc.sh
-# to run, change to the base of the node app and exec nvmrc.sh
-# cd /opt/apps/myapp
+# to run on Bamboo:
 # /opt/nvmrc.sh
+# to run on deployment server
+# /opt/nvmrc.sh /opt/apps/myapp
 ```
 
 <!-- 
