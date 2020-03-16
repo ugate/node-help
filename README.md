@@ -158,4 +158,4 @@ sudo systemctl status redis.service
 redis-cli -a 'REDIS_PASSWORD_HERE' ping
 ```
 
-## [Using `nvm` + Bamboo](blob/master/bamboo.md):
+## [Using `nvm` + Bamboo](bamboo.md):
