@@ -3,8 +3,8 @@
 # $NVM_DIR should be already set before running (usually auto loaded from profile)
 # $1 Node.js app base directory (defaults to $PWD)
 source ~/.bashrc
-echo "Using \$NVM_DIR=$NVM_DIR for $PWD/.nvmrc"
 NVMRC_APP_DIR=`[[ (-n "$1") ]] && echo $1 || echo $PWD`
+echo "Using \$NVM_DIR=$NVM_DIR for $NVMRC_APP_DIR/.nvmrc"
 NVMRC_RC=`cat $NVMRC_APP_DIR/.nvmrc 2>/dev/null | sed 's/lts\///'`
 if [[ (-z "$NVMRC_RC") ]]; then
   echo "No Node.js version or LTS codename in base app directory: $NVMRC_APP_DIR/.nvmrc"
@@ -14,7 +14,7 @@ echo "Found $NVMRC_APP_DIR/.nvmrc version: $NVMRC_RC (excluding any \"lts/\" pre
 NVMRC_VER=`echo $NVMRC_RC | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/v\1/p'`
 NVMRC_LTS_NAME=`[[ (-z "$NVMRC_VER") ]] && echo $NVMRC_RC || echo ''`
 NVMRC_LTS_VER=`[[ (-n "$NVMRC_LTS_NAME") ]] && cat $NVM_DIR/alias/lts/$NVMRC_LTS_NAME 2>/dev/null || echo ''`
-echo "Extracted $PWD/.nvmrc version: `[[ (-n "$NVMRC_LTS_VER") ]] && echo $NVMRC_LTS_VER || echo $NVMRC_LTS_NAME $NVMRC_VER`"
+echo "Extracted $NVMRC_APP_DIR/.nvmrc version: `[[ (-n "$NVMRC_LTS_VER") ]] && echo $NVMRC_LTS_VER || echo $NVMRC_LTS_NAME $NVMRC_VER`"
 if [[ (-z "$NVMRC_VER") ]]; then
   echo "Checking for latest remote Node.js lts/$NVMRC_LTS_NAME (from: nvm ls-remote --lts)"
   NVMRC_LTS_LATEST=`nvm ls-remote --lts | sed -nre "s/^.*(v[0-9]+\.[0-9]+\.[0-9]).*Latest LTS.*$NVMRC_LTS_NAME.*/\1/pi"`
