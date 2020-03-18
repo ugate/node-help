@@ -34,7 +34,7 @@ export NVM_DIR=/opt/.nvm
 echo 'node version:' && $NVM_DIR/nvm-exec node -v
 echo 'npm version:' && $NVM_DIR/nvm-exec npm -v
 $NVM_DIR/nvm-exec npm install
-$NVM_DIR/nvm-exec npm test
+$NVM_DIR/nvm-exec npm run unit
 $NVM_DIR/nvm-exec npx snowpack
 ```
 
