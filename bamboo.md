@@ -20,7 +20,9 @@ There are a few build tasks that can be setup to handle automated Node.js builds
 1. Bundle the appication into a single compressed archive
 
 #### Checkout the Node.js application code
-![Build Task 1](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-build-task1.jpg "Build Task 1")
+The node app code should be checked out according to the branch where the build is taking place.
+
+<kbd>![Build Task 1](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-build-task1.jpg "Build Task 1")</kbd>
 
 #### Install Node.js &amp; Build Operations
 Check the Node.js version that is required by the app based upon the `.nvmrc` file in the base directory of the app. Based upon the extracted Node.js version the build task will install or update the specified Node.js version if it isn't already installed. For example, if `.nvmrc` contains `lts/erbium` the build script will ensure the latest `12.x` version of node is installed/used during subsequent `node`/`npm`/`mpx` calls.
@@ -40,7 +42,7 @@ $NVM_DIR/nvm-exec npx snowpack
 
 > Depending on the size of the application, the `NODE_OPTIONS="--max-old-space-size=2048"` memory may need to be set on the Environment variables
 
-![Build Task 2](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-build-task2.jpg "Build Task 2")
+<kbd>![Build Task 2](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-build-task2.jpg "Build Task 2")</kbd>
 
 #### Bundle the application
 Create an single archive that can easily deployed to various server environments.
@@ -49,7 +51,7 @@ Create an single archive that can easily deployed to various server environments
 tar --exclude='./*git*' --exclude='./node_modules' --exclude='*.gz' -czvf myapp.tar.gz *
 ```
 
-![Build Task 3](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-build-task3.jpg "Build Task 3")
+<kbd>![Build Task 3](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-build-task3.jpg "Build Task 3")</kbd>
 
 ### Deploy
 Once the deployment is triggered, there are a few tasks that can be perfoemed to ensure the vertically/horizontally scalled node app is updated and restarted
@@ -65,12 +67,12 @@ Once the deployment is triggered, there are a few tasks that can be perfoemed to
 #### Clean the working directory
 Ensure that the working deployment directory doesn't contain any files/directories from prior deployments
 
-![Deploy Task 1](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task1.jpg "Deploy Task 1")
+<kbd>![Deploy Task 1](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task1.jpg "Deploy Task 1")</kbd>
 
 #### Download the compressed node app
 Download the compressed node app directories from the CI server onto the deployment server(s)
 
-![Deploy Task 2](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task2.jpg "Deploy Task 2")
+<kbd>![Deploy Task 2](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task2.jpg "Deploy Task 2")</kbd>
 
 #### Stop the node app service target &amp; Node.js install/update
 In order to update the previously built node app, the service target needs to be stopped. Also, check the Node.js version that is required by the app based upon the `.nvmrc` file in the base directory of the app. Based upon the extracted Node.js version the build task will install or update the specified Node.js version if it isn't already installed. For example, if `.nvmrc` contains `lts/erbium` the build script will ensure the latest `12.x` version of node is installed/used during subsequent `node`/`npm`/`mpx` calls.
@@ -82,7 +84,7 @@ sudo systemctl stop myapp.target
 /opt/nvmrc.sh /opt/apps/myapp
 ```
 
-![Deploy Task 3](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task3.jpg "Deploy Task 3")
+<kbd>![Deploy Task 3](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task3.jpg "Deploy Task 3")</kbd>
 
 #### Backup the node app dir and clean it's contents
 Before extracting the updated node app, the old app version should be backed up and timestamped before continuing. Once backed up, the old contents should be removed.
@@ -92,12 +94,12 @@ tar -czvf /tmp/myapp-backup-`date +%Y%m%d_%H%M%S`.tar.gz /opt/apps/myapp/*
 rm -rf /opt/apps/myapp/*
 ```
 
-![Deploy Task 4](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task4.jpg "Deploy Task 4")
+<kbd>![Deploy Task 4](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task4.jpg "Deploy Task 4")</kbd>
 
 #### Copy compressed node app artifact to the deployment server(s)
 Copy the updated node app archive from the CI server onto the deployment server(s).
 
-![Deploy Task 5](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task5.jpg "Deploy Task 5")
+<kbd>![Deploy Task 5](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task5.jpg "Deploy Task 5")</kbd>
 
 #### Extract node app artifact
 Extract the compressed node app that contains the updates into the existing application directory.
@@ -107,7 +109,7 @@ tar --warning=no-timestamp -xzvf /opt/apps/myapp/myapp.tar.gz -C /opt/apps/myapp
 rm -f /opt/apps/myapp/myapp.tar.gz
 ```
 
-![Deploy Task 6](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task6.jpg "Deploy Task 6")
+<kbd>![Deploy Task 6](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task6.jpg "Deploy Task 6")</kbd>
 
 #### Start the node app service target
 Start the node app service target which will start all of the underlying service instances.
@@ -118,7 +120,7 @@ sudo systemctl start myapp.target
 sudo systemctl status myapp.target
 ```
 
-![Deploy Task 7](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task7.jpg "Deploy Task 7")
+<kbd>![Deploy Task 7](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task7.jpg "Deploy Task 7")</kbd>
 
 ### Troubleshooting
 
