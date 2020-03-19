@@ -14,10 +14,10 @@ Now that the nvmrc.sh script has been written on both the Bamboo integration ser
 ### Build
 There are a few build tasks that can be setup to handle automated Node.js builds in Bamboo. These tasks will accomplish the following goals:
 
-#1 Checkout the Node.js application code
-#1 Check the .nvmrc file for the required Node.js version and install/update it accordingly using the nvmrc.sh script
-#1 Run the build operations such as npm, npx, etc.
-#1 Bundle the appication into a single compressed archive
+1. Checkout the Node.js application code
+1. Check the .nvmrc file for the required Node.js version and install/update it accordingly using the nvmrc.sh script
+1. Run the build operations such as npm, npx, etc.
+1. Bundle the appication into a single compressed archive
 
 #### Checkout the Node.js application code
 ![Build Task 1](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-build-task1.jpg "Build Task 1")
