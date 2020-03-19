@@ -38,6 +38,8 @@ $NVM_DIR/nvm-exec npm run unit
 $NVM_DIR/nvm-exec npx snowpack
 ```
 
+> Depending on the size of the application, the `NODE_OPTIONS="--max-old-space-size=2048"` memory may need to be set on the Environment variables
+
 ![Build Task 2](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-build-task2.jpg "Build Task 2")
 
 #### Bundle the application
