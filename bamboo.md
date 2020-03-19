@@ -15,7 +15,7 @@ Now that the nvmrc.sh script has been written on both the Bamboo integration ser
 There are a few build tasks that can be setup to handle automated Node.js builds in Bamboo. These tasks will accomplish the following goals:
 
 1. Checkout the Node.js application code
-1. Check the .nvmrc file for the required Node.js version and install/update it accordingly using the nvmrc.sh script
+1. Check the base dir of node app `.nvmrc` file for the required Node.js version and install/update it accordingly using the `nvmrc.sh` script on the CI server
 1. Run the build operations such as npm, npx, etc.
 1. Bundle the appication into a single compressed archive
 
@@ -23,7 +23,7 @@ There are a few build tasks that can be setup to handle automated Node.js builds
 ![Build Task 1](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-build-task1.jpg "Build Task 1")
 
 #### Install Node.js &amp; Build Operations
-Check the requird Node.js version that is required by the app based upon the .nvmrc file in the base directory of the app. Based upon the extracted Node.js version the build task will install or update the Node.js 
+Check the requird Node.js version that is required by the app based upon the `.nvmrc` file in the base directory of the app. Based upon the extracted Node.js version the build task will install or update the specified Node.js version. For example, if `.nvmrc` contains `lts/erbium` the build script will ensure the latest `12.x` version of node is installed/used during subsequent `node`/`npm`/`mpx` calls.
 
 ```sh
 # set the NVM_DIR (if not already set)
@@ -33,7 +33,7 @@ export NVM_DIR=/opt/.nvm
 # run node commands using app version in .nvmrc (exec may vary)
 echo 'node version:' && $NVM_DIR/nvm-exec node -v
 echo 'npm version:' && $NVM_DIR/nvm-exec npm -v
-$NVM_DIR/nvm-exec npm install
+$NVM_DIR/nvm-exec npm ci
 $NVM_DIR/nvm-exec npm run unit
 $NVM_DIR/nvm-exec npx snowpack
 ```
@@ -48,6 +48,25 @@ tar --exclude='./*git*' --exclude='./node_modules' --exclude='*.gz' -czvf myapp.
 ```
 
 ![Build Task 3](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-build-task3.jpg "Build Task 3")
+
+### Deploy
+Once the deployment is triggered, there are a few tasks that can be perfoemed to ensure the vertically/horizontally scalled node app is updated and restarted
+
+1. Clean the working directory
+1. Download the compressed node app
+1. SSH: Stop the node app service target and check the base dir of node app `.nvmrc` file for the required Node.js version and install/update it accordingly using the `nvmrc.sh` script on the deployment server(s)
+1. SSH: Backup the node app dir and clean it's contents
+1. SCP: Copy compressed node app artifact to the deployment server(s)
+1. SSH: Extract node app artifact
+1. SSH: Start the node app service target
+
+![Deploy Task 1](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task1.jpg "Deploy Task 1")
+![Deploy Task 2](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task2.jpg "Deploy Task 2")
+![Deploy Task 3](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task3.jpg "Deploy Task 3")
+![Deploy Task 4](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task4.jpg "Deploy Task 4")
+![Deploy Task 5](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task5.jpg "Deploy Task 5")
+![Deploy Task 6](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task6.jpg "Deploy Task 6")
+![Deploy Task 7](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task7.jpg "Deploy Task 7")
 
 ### Troubleshooting
 
