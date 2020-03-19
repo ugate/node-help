@@ -73,10 +73,22 @@ Download the compressed node app directories from the CI server onto the deploym
 #### Stop the node app service target &amp; Node.js install/update
 In order to update the previously built node app, the service target needs to be stopped. Also, check the Node.js version that is required by the app based upon the `.nvmrc` file in the base directory of the app. Based upon the extracted Node.js version the build task will install or update the specified Node.js version if it isn't already installed. For example, if `.nvmrc` contains `lts/erbium` the build script will ensure the latest `12.x` version of node is installed/used during subsequent `node`/`npm`/`mpx` calls.
 
+```sh
+# stop Node.js app service
+sudo systemctl stop myapp.target
+# ensure desired node version is installed using .nvmrc in base dir of app
+/opt/nvmrc.sh /opt/apps/myapp
+```
+
 ![Deploy Task 3](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task3.jpg "Deploy Task 3")
 
 #### Backup the node app dir and clean it's contents
 Before extracting the updated node app, the old app version should be backed up and timestamped before continuing. Once backed up, the old contents should be removed.
+
+```sh
+tar -czvf /tmp/myapp-backup-`date +%Y%m%d_%H%M%S`.tar.gz /opt/apps/myapp/*
+rm -rf /opt/apps/myapp/*
+```
 
 ![Deploy Task 4](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task4.jpg "Deploy Task 4")
 
@@ -88,10 +100,21 @@ Copy the updated node app archive from the CI server onto the deployment server(
 #### Extract node app artifact
 Extract the compressed node app that contains the updates into the existing application directory.
 
+```sh
+tar --warning=no-timestamp -xzvf /opt/apps/myapp/myapp.tar.gz -C /opt/apps/myapp
+rm -f /opt/apps/myapp/myapp.tar.gz
+```
+
 ![Deploy Task 6](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task6.jpg "Deploy Task 6")
 
 #### Start the node app service target
 Start the node app service target which will start all of the underlying service instances.
+
+```sh
+# start node app services
+sudo systemctl start myapp.target
+sudo systemctl status myapp.target
+```
 
 ![Deploy Task 7](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-deploy-task7.jpg "Deploy Task 7")
 
