@@ -139,6 +139,15 @@ systemctl status myapp.target
 systemctl status myapp@9090.service myapp@9091.service myapp@9092.service myapp@9093.service
 ```
 
+To check the logs/output for a `target`/`service`:
+
+```sh
+# the entire log for the target/service
+journalctl -u myapp@9090.service
+# the loga since the last boot for the target/service
+journalctl -u myapp@9090.service -b
+```
+
 ## Redis installation:
 Redis is an in-memory database that is typically used in conjunction with Node applications/microservices in order to achieve autonomy between vertically and horizontally scaled Node application processes. Redis is typically much more efficient at delegating and managing resources for things like sessions, temporary objects, etc. than an application memory space. Redis also will enable users of an application to remain logged in between application/service restarts.
 
