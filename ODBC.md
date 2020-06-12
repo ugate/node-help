@@ -14,16 +14,16 @@ odbcinst -j
 # using the loc of the System Data Sources from the prior step, edit the odbc.ini to add the driver config (see subsequent supplement)
 vi /etc/odbc.ini
 # check the connection using single quotes around the password (CTRL + C to exit isql)
-isql -v Labdash svc_myusername 'INSERT_REAL_PASSWORD_HERE'
+isql -v MyDSN svc_myusername 'INSERT_REAL_PASSWORD_HERE'
 ```
 
 Example/supplemental __odbc.ini__ [configuration for Cachè](https://cedocs.intersystems.com/latest/csp/docbook/DocBook.UI.Page.cls?KEY=BGOD_unixodbc):
 
 ```ini
 [ODBC Data Sources]
-Cache=Cache
+MyDSN=MyDSN
  
-[Cache]
+[MyDSN]
 Driver=/usr/cachesys/bin/libcacheodbc35.so
 Description=Cache (TEST)
 Host=example.com
