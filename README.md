@@ -57,7 +57,7 @@ There are a few different options for database connectivity within Node for DBMS
 | :---          | :---:                                                                                          | :---
 | Oracle        | [oracledb](https://oracle.github.io/node-oracledb/)                                            | C/C++
 | MS SQL Server | [tedious](https://docs.microsoft.com/en-us/sql/connect/node-js/node-js-driver-for-sql-server)  | C/C++/[MS-TDS](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-tds/b46a581a-39de-4745-b076-ec4dbb7d13ec)
-| ODBC          | [odbc](https://www.npmjs.com/package/odbc)                                                     | C/C++ (see ODBC)
+| ODBC          | [odbc](https://www.npmjs.com/package/odbc)                                                     | C/C++ ([see ODBC](ODBC.md))
 
 ## Application Installation/Deployment
 Each node application can be scaled vertically by deploying multiple node application processes that match the number of physical CPUs allocated on the physical server where the application resides. Each of those processes should reference the same code base and remain stateless throughout the application's life-cycle. This helps to ensure consistency across application deployments and enables the possibility for zero-downtime for potential application upgrades.
