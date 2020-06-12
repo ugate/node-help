@@ -7,6 +7,7 @@ sudo su
 # download/extract the driver files
 mkdir -p /usr/cachesys && curl -L ftp://ftp.intersystems.com/pub/cache/odbc/2018/ODBC-2018.1.2.309.0-lnxrhx64.tar.gz | tar -C /usr/cachesys -zxv
 # install unixODBC and unixODBC-devel
+# sudo apt-get update -y && sudo apt-get install -y unixodbc unixodbc-dev
 yum install unixODBC unixODBC-devel
 # check for the loc of the odbc.ini file(s)
 odbcinst -j
