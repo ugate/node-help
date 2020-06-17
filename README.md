@@ -131,7 +131,7 @@ sudo vi /etc/systemd/system/myapp.target
 # reload the systemd configuration
 sudo systemctl daemon-reload
 # enable the target/service
-sudo systemctl enable myapp
+sudo systemctl enable myapp.target
 # start the target (could also start each service individually: sudo systemctl start myapp@9090.service)
 sudo systemctl start myapp.target
 # check the status of the target/services
