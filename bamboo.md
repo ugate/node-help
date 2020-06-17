@@ -136,9 +136,9 @@ cd /opt/application-data/bamboo/xml-data/build-dir/MYAPP-MASTER-JOB1
 # bamboo sets these env vars when it runs, so we need to add them manually here
 PATH=$PATH:/opt/.nvm/versions/node/v14.0.0/bin
 # init build
-/opt/.nvm/versions/node/v14.0.0/bin/npm install
+/opt/.nvm/versions/node/v14.0.0/bin/npm ci
 # init packaging?
-/opt/.nvm/versions/node/v14.0.0/bin/npx snowpack
+/opt/.nvm/versions/node/v14.0.0/bin/npx snowpack install
 # run app?
 node .
 ```
