@@ -144,8 +144,10 @@ To check the logs/output for a `target`/`service`:
 ```sh
 # the entire log for the target/service
 journalctl -u myapp@9090.service
-# the loga since the last boot for the target/service
+# the log since the last boot for the target/service
 journalctl -u myapp@9090.service -b
+# the end of the log for the target/service
+journalctl -u myapp@9090.service -e
 ```
 
 ## Redis installation:
