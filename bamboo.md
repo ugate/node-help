@@ -37,7 +37,7 @@ echo 'node version:' && $NVM_DIR/nvm-exec node -v
 echo 'npm version:' && $NVM_DIR/nvm-exec npm -v
 $NVM_DIR/nvm-exec npm ci
 $NVM_DIR/nvm-exec npm run unit
-$NVM_DIR/nvm-exec npx snowpack
+$NVM_DIR/nvm-exec npx snowpack install
 ```
 
 > Depending on the size of the application, the `NODE_OPTIONS="--max-old-space-size=2048"` memory may need to be set on the Environment variables
