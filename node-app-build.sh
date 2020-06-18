@@ -20,10 +20,16 @@ CMD_TEST=`[[ (-z "$4") ]] && echo $4 || echo "npm test"`
 CMD_BUNDLE=`[[ (-z "$5") ]] && echo $5 || echo ""`
 NVMRC_DIR=`[[ (-z "$6") ]] && echo $6 || echo $PWD`
 
-if [[ (-d "$APP_DIR/$APP_NAME") ]]; then
-  echo "BUILD: using app dir $APP_DIR/$APP_NAME"
+if [[ (-n "$APP_NAME") ]]; then
+  echo "BUILD: using app name $APP_NAME"
 else
-  echo "BUILD: unable to find dir $APP_DIR/$APP_NAME"
+  echo "BUILD: missing app name argument"
+  exit 1
+fi
+if [[ (-d "$APP_DIR") ]]; then
+  echo "BUILD: using app dir $APP_DIR"
+else
+  echo "BUILD: unable to find dir $APP_DIR"
   exit 1
 fi
 if [[ (-x "$NVMRC_DIR/nvmrc.sh") ]]; then
