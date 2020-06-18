@@ -7,7 +7,7 @@ NVMRC_APP_DIR=`[[ (-n "$1") ]] && echo $1 || echo $PWD`
 echo "Using \$NVM_DIR=$NVM_DIR for $NVMRC_APP_DIR/.nvmrc"
 NVMRC_RC=`cat $NVMRC_APP_DIR/.nvmrc 2>/dev/null | sed 's/lts\///'`
 if [[ (-z "$NVMRC_RC") ]]; then
-  echo "No Node.js version or LTS codename in base app directory: $NVMRC_APP_DIR/.nvmrc"
+  echo "No Node.js version or LTS codename in base app directory: $NVMRC_APP_DIR/.nvmrc" >&2
   exit 1
 fi
 echo "Found $NVMRC_APP_DIR/.nvmrc version: $NVMRC_RC (excluding any \"lts/\" prefix)"
