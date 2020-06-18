@@ -5,6 +5,7 @@
 # the app's dir. For example, .nvmrc could contain lts/iron or v20.0.0 and will be
 # installed (if needed)/used.
 # $NVM_DIR should be already set before running (usually auto loaded from profile)
+##################################################################################
 # $1 Node.js app name (required)
 # $2 Node.js app dir (required)
 # $3 npm/node install command (defaults to "npm ci")
