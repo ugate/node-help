@@ -49,7 +49,7 @@ if [[ ("$NVMRC_STATUS" != 0) ]]; then
 fi
 
 # enable nvm (alt "$NVM_DIR/nvm-exec node" or "$NVM_DIR/nvm-exec npm")
-# source ~/.bashrc
+source ~/.bashrc
 NVM_EDIR=`[[ (-n "$NVM_DIR") ]] && echo $NVM_DIR || echo "$HOME/.nvm"`
 #if [[ (-x "$(command -v nvm)") ]]; then
 if [[ (-x "$NVM_EDIR/nvm-exec") ]]; then
