@@ -44,3 +44,4 @@ if [[ (-n "$NVMRC_VER") ]]; then
     nvm install $NVMRC_VER
   fi
 fi
+export NVMRC_VER=$NVMRC_VER
