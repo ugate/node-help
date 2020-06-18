@@ -64,12 +64,10 @@ else
 fi
 # run node commands using app version in .nvmrc
 nvm use "$NVMRC_VER"
-echo 'BUILD: node version:' && $NVM_EDIR/nvm-exec node -v
-echo 'BUILD: npm version:' && $NVM_EDIR/nvm-exec npm -v
-$NVM_EDIR/nvm-exec $CMD_INSTALL
-$NVM_EDIR/nvm-exec $CMD_TEST
+$CMD_INSTALL
+$CMD_TEST
 if [[ (-n "$CMD_BUNDLE") ]]; then
-  $NVM_EDIR/nvm-exec $CMD_BUNDLE
+  $CMD_BUNDLE
 else
   echo "BUILD: No bundling performed"
 fi
