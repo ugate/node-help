@@ -7,18 +7,18 @@
 # $NVM_DIR should be already set before running (usually auto loaded from profile)
 ##################################################################################
 # $1 Node.js app name (required)
-# $2 Node.js app dir (required)
+# $2 Node.js app dir (defaults to $PWD)
 # $3 npm/node install command (defaults to "npm ci")
 # $4 npm/node test command (defaults to "npm test")
 # $5 npm/node bundle command (defaults to "")
-# $6 nvmrc.sh directory (defaults to $PWD)
+# $6 nvmrc.sh directory (defaults to "/opt")
 
 APP_NAME=`[[ (-n "$1") ]] && echo $1`
-APP_DIR=`[[ (-n "$2") ]] && echo $2`
+APP_DIR=`[[ (-n "$2") ]] && echo $2 || echo $PWD`
 CMD_INSTALL=`[[ (-z "$3") ]] && echo $3 || echo "npm ci"`
 CMD_TEST=`[[ (-z "$4") ]] && echo $4 || echo "npm test"`
 CMD_BUNDLE=`[[ (-z "$5") ]] && echo $5 || echo ""`
-NVMRC_DIR=`[[ (-z "$6") ]] && echo $6 || echo $PWD`
+NVMRC_DIR=`[[ (-z "$6") ]] && echo $6 || echo "/opt"`
 
 if [[ (-n "$APP_NAME") ]]; then
   echo "BUILD: using app name $APP_NAME"
