@@ -53,13 +53,13 @@ elif [[ (-z "$NVMRC_VER") ]]; then
 fi
 
 # enable nvm (alt "$NVM_DIR/nvm-exec node" or "$NVM_DIR/nvm-exec npm")
+#NVM_EDIR=`[[ (-n "$NVM_DIR") ]] && echo $NVM_DIR || echo "$HOME/.nvm"`
+#if [[ (-x "$NVM_EDIR/nvm-exec") ]]; then
 source ~/.bashrc
-NVM_EDIR=`[[ (-n "$NVM_DIR") ]] && echo $NVM_DIR || echo "$HOME/.nvm"`
-#if [[ (-x "$(command -v nvm)") ]]; then
-if [[ (-x "$NVM_EDIR/nvm-exec") ]]; then
-  echo "BUILD: executing $NVM_EDIR/nvm-exec commands"
+if [[ (-x "$(command -v nvm)") ]]; then
+  echo "BUILD: executing nvm commands"
 else
-  echo "BUILD: $NVM_EDIR/nvm-exec command is not accessible" >&2
+  echo "BUILD: nvm command is not accessible for execution" >&2
   exit 1
 fi
 # run node commands using app version in .nvmrc
