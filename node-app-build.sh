@@ -28,6 +28,7 @@ else
 fi
 if [[ (-d "$APP_DIR") ]]; then
   echo "BUILD: using app dir $APP_DIR"
+  cd $APP_DIR
 else
   echo "BUILD: unable to find dir $APP_DIR"
   exit 1
