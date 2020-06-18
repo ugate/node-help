@@ -1,28 +1,16 @@
 ## Using `nvm` + [Bamboo](https://www.atlassian.com/software/bamboo):
 When installing `node` on a Bamboo server, nvm should be installed locally using the previous install instructions. As described in the [Service Installation section](#service), each Node.js app should contain a `.nvmrc` file that indicates the _version_ or [Node.js codename](https://github.com/nodejs/Release/blob/master/CODENAMES.md) that will be used by Bamboo. The [`nvmrc.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/nvmrc.sh) can be used to dynamically detect and install the node version used by an app based upon the project's `.nvmrc` file. It will determine if the node version is already installed. When it is not, it will run the `nvm` command to install it.
 
-Write the [`nvmrc.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/nvmrc.sh) and [`node-app-build.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/node-app-build.sh) onto the __Bamboo server(s)__.
+Write the [`nvmrc.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/nvmrc.sh) and [`node-app-cicd.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/node-app-cicd.sh) onto the __Bamboo server(s) and the Deployment servers__.
 ```sh
 # write the nvmrc.sh contents from the nvmrc.sh script
 sudo vi /opt/nvmrc.sh
 # add execution privleges for all users
 sudo chmod a+x /opt/nvmrc.sh
-# write the node-app-build.sh contents from the node-app-build.sh script
-sudo vi /opt/node-app-build.sh
+# write the node-app-cicd.sh contents from the node-app-cicd.sh script
+sudo vi /opt/node-app-cicd.sh
 # add execution privleges for all users
-sudo chmod a+x /opt/node-app-build.sh
-```
-
-Write the [`nvmrc.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/nvmrc.sh) and [`node-app-deploy.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/node-app-deploy.sh)  onto the __Deployment server(s)__.
-```sh
-# write the nvmrc.sh contents from the nvmrc.sh script
-sudo vi /opt/nvmrc.sh
-# add execution privleges for all users
-sudo chmod a+x /opt/nvmrc.sh
-# write the node-app-deploy.sh contents from the node-app-deploy.sh script
-sudo vi /opt/node-app-deploy.sh
-# add execution privleges for all users
-sudo chmod a+x /opt/node-app-deploy.sh
+sudo chmod a+x /opt/node-app-cicd.sh
 ```
 
 Now that the scripts have been written on both the Bamboo integration server and the deployment server(s), the Bamboo tasks can be setup.
@@ -45,15 +33,17 @@ The node app code should be checked out according to the branch where the build 
 Check the Node.js version that is required by the app based upon the `.nvmrc` file in the base directory of the app. Based upon the extracted Node.js version the build task will install or update the specified Node.js version if it isn't already installed. For example, if `.nvmrc` contains `lts/iron` the build script will ensure the latest `20.x` version of node is installed/used during subsequent `node`/`npm`/`mpx` calls.
 
 ```sh
-# source build script that will build/bundle the app
+# run the script that will build/bundle the app
 ##################################################################################
-# $1 Node.js app name (required)
-# $2 Node.js app dir (defaults to $PWD)
-# $3 npm/node install command (defaults to "npm ci")
-# $4 npm/node test command (defaults to "npm test")
-# $5 npm/node bundle command (defaults to "")
-# $6 nvmrc.sh directory (defaults to "/opt")
-/opt/node-app-build.sh labdash . "npm ci" "npm test" "npx snowpack install" "/opt"
+# $1 Execution type (either BUILD or DEPLOY)
+# $2 Node.js app name (required)
+# $3 Node.js app dir (defaults to $PWD)
+# $4 nvmrc.sh directory (defaults to "/opt")
+# $5 npm/node ci/install command (defaults to "npm ci")
+# $6 npm/node test command (defaults to "npm test", optional)
+# $7 npm/node bundle/debundle command (defaults to "", optional)
+# $8 Temporary directory for deployment backup and other temp files (defaults to "/tmp", DEPLOY only)
+/opt/node-app-cicd.sh BUILD labdash . "/opt" "npm ci" "npm run unit" "npx snowpack install"
 ```
 
 > Depending on the size of the application, the `NODE_OPTIONS="--max-old-space-size=2048"` memory may need to be set on the Environment variables
