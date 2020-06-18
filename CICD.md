@@ -1,22 +1,39 @@
 ## Using `nvm` + [Bamboo](https://www.atlassian.com/software/bamboo):
 When installing `node` on a Bamboo server, nvm should be installed locally using the previous install instructions. As described in the [Service Installation section](#service), each Node.js app should contain a `.nvmrc` file that indicates the _version_ or [Node.js codename](https://github.com/nodejs/Release/blob/master/CODENAMES.md) that will be used by Bamboo. The [`nvmrc.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/nvmrc.sh) can be used to dynamically detect and install the node version used by an app based upon the project's `.nvmrc` file. It will determine if the node version is already installed. When it is not, it will run the `nvm` command to install it.
 
-Write the [`nvmrc.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/nvmrc.sh) onto the __Bamboo server and the deployment servers__.
+Write the [`nvmrc.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/nvmrc.sh) and [`node-app-build.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/node-app-build.sh) onto the __Bamboo server(s)__.
 ```sh
 # write the nvmrc.sh contents from the nvmrc.sh script
 sudo vi /opt/nvmrc.sh
 # add execution privleges for all users
 sudo chmod a+x /opt/nvmrc.sh
+# write the node-app-build.sh contents from the node-app-build.sh script
+sudo vi /opt/node-app-build.sh
+# add execution privleges for all users
+sudo chmod a+x /opt/node-app-build.sh
 ```
 
-Now that the nvmrc.sh script has been written on both the Bamboo integration server and the deployment server(s), the Bamboo tasks can be setup.
+Write the [`nvmrc.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/nvmrc.sh) and [`node-app-deploy.sh` script](https://raw.githubusercontent.com/ugate/node-help/master/node-app-deploy.sh)  onto the __Deployment server(s)__.
+```sh
+# write the nvmrc.sh contents from the nvmrc.sh script
+sudo vi /opt/nvmrc.sh
+# add execution privleges for all users
+sudo chmod a+x /opt/nvmrc.sh
+# write the node-app-deploy.sh contents from the node-app-deploy.sh script
+sudo vi /opt/node-app-deploy.sh
+# add execution privleges for all users
+sudo chmod a+x /opt/node-app-deploy.sh
+```
 
-### Build
+Now that the scripts have been written on both the Bamboo integration server and the deployment server(s), the Bamboo tasks can be setup.
+
+### Build/Test/Bundle
 There are a few build tasks that can be setup to handle automated Node.js builds in Bamboo. These tasks will accomplish the following goals:
 
 1. Checkout the Node.js application code
-1. Node.js install/update
-1. Run the build operations such as npm, npx, etc.
+1. Node.js install/update (via `nvm` using and `.nvmrc` in the base dir of the app)
+1. Run the build operations (i.e. `npm ci`, `npm install`, etc.)
+1. Bundle the application assets (e.g. [`webpack`](https://webpack.js.org/), [`snowpack`](https://www.snowpack.dev/), etc.)
 1. Bundle the appication into a single compressed archive
 
 #### Checkout the Node.js application code
@@ -24,34 +41,24 @@ The node app code should be checked out according to the branch where the build 
 
 <kbd>![Build Task 1](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-build-task1.jpg "Build Task 1")</kbd>
 
-#### Install Node.js &amp; Build Operations
-Check the Node.js version that is required by the app based upon the `.nvmrc` file in the base directory of the app. Based upon the extracted Node.js version the build task will install or update the specified Node.js version if it isn't already installed. For example, if `.nvmrc` contains `lts/erbium` the build script will ensure the latest `12.x` version of node is installed/used during subsequent `node`/`npm`/`mpx` calls.
+#### Install Node.js Version, Build &amp; Bundle Operations
+Check the Node.js version that is required by the app based upon the `.nvmrc` file in the base directory of the app. Based upon the extracted Node.js version the build task will install or update the specified Node.js version if it isn't already installed. For example, if `.nvmrc` contains `lts/iron` the build script will ensure the latest `20.x` version of node is installed/used during subsequent `node`/`npm`/`mpx` calls.
 
 ```sh
-# set the NVM_DIR (if not already set)
-export NVM_DIR=/opt/.nvm
-# ensure desired node version is installed using .nvmrc in base dir of app
-/opt/nvmrc.sh
-# run node commands using app version in .nvmrc (exec may vary)
-echo 'node version:' && $NVM_DIR/nvm-exec node -v
-echo 'npm version:' && $NVM_DIR/nvm-exec npm -v
-$NVM_DIR/nvm-exec npm ci
-$NVM_DIR/nvm-exec npm run unit
-$NVM_DIR/nvm-exec npx snowpack install
+# source build script that will build/bundle the app
+##################################################################################
+# $1 Node.js app name (required)
+# $2 Node.js app dir (defaults to $PWD)
+# $3 npm/node install command (defaults to "npm ci")
+# $4 npm/node test command (defaults to "npm test")
+# $5 npm/node bundle command (defaults to "")
+# $6 nvmrc.sh directory (defaults to "/opt")
+/opt/node-app-build.sh labdash . "npm ci" "npm test" "npx snowpack install" "/opt"
 ```
 
 > Depending on the size of the application, the `NODE_OPTIONS="--max-old-space-size=2048"` memory may need to be set on the Environment variables
 
 <kbd>![Build Task 2](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-build-task2.jpg "Build Task 2")</kbd>
-
-#### Bundle the application
-Create an single archive that can easily deployed to various server environments.
-
-```sh
-tar --exclude='./*git*' --exclude='./node_modules' --exclude='*.gz' -czvf myapp.tar.gz *
-```
-
-<kbd>![Build Task 3](https://raw.githubusercontent.com/ugate/node-help/master/img/bamboo-build-task3.jpg "Build Task 3")</kbd>
 
 ### Deploy
 Once the deployment is triggered, there are a few tasks that can be perfoemed to ensure the vertically/horizontally scalled node app is updated and restarted
