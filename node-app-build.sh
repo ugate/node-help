@@ -57,12 +57,14 @@ fi
 # enable nvm (alt "$NVM_DIR/nvm-exec node" or "$NVM_DIR/nvm-exec npm")
 # source ~/.bashrc
 # run node commands using app version in .nvmrc
-echo 'BUILD: node version:' && $NVM_DIR/nvm-exec node -v
-echo 'BUILD: npm version:' && $NVM_DIR/nvm-exec npm -v
-$NVM_DIR/nvm-exec $CMD_INSTALL
-$NVM_DIR/nvm-exec $CMD_TEST
+#$NVM_DIR/nvm-exec node -v
+#$NVM_DIR/nvm-exec npm -v
+echo 'BUILD: node version:' && nvm node -v
+echo 'BUILD: npm version:' && nvm npm -v
+nvm $CMD_INSTALL
+nvm $CMD_TEST
 if [[ (-n "$CMD_BUNDLE") ]]; then
-  $NVM_DIR/nvm-exec $CMD_BUNDLE
+  nvm $CMD_BUNDLE
 else
   echo "BUILD: No bundling performed"
 fi
