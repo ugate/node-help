@@ -47,15 +47,15 @@ if [[ ("$NVMRC_STATUS" != 0) ]]; then
   echo "$NVMRC_DIR/nvmrc.sh returned: $NVMRC_STATUS"
   exit $NVMRC_STATUS
 fi
-if [[ (-x "$NVM_DIR/nvm-exec") ]]; then
-  echo "BUILD: using $NVM_DIR/nvm-exec"
-else
-  echo "BUILD: unable to find: $NVM_DIR/nvm-exec" >&2
-  exit 1
-fi
 
 # enable nvm (alt "$NVM_DIR/nvm-exec node" or "$NVM_DIR/nvm-exec npm")
 # source ~/.bashrc
+if [[ (-n "command -v nvm") ]]; then
+  echo "BUILD: nvm using $NVM_DIR/nvm-exec"
+else
+  echo "BUILD: nvm command is not accessible" >&2
+  exit 1
+fi
 # run node commands using app version in .nvmrc
 #$NVM_DIR/nvm-exec node -v
 #$NVM_DIR/nvm-exec npm -v
