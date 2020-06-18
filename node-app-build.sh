@@ -23,28 +23,35 @@ NVMRC_DIR=`[[ (-z "$6") ]] && echo $6 || echo "/opt"`
 if [[ (-n "$APP_NAME") ]]; then
   echo "BUILD: using app name $APP_NAME"
 else
-  echo "BUILD: missing app name argument"
+  echo "BUILD: missing app name argument" >&2
   exit 1
 fi
 if [[ (-d "$APP_DIR") ]]; then
   echo "BUILD: using app dir $APP_DIR"
   cd $APP_DIR
 else
-  echo "BUILD: unable to find dir $APP_DIR"
+  echo "BUILD: unable to find dir $APP_DIR" >&2
   exit 1
 fi
 if [[ (-x "$NVMRC_DIR/nvmrc.sh") ]]; then
   echo "BUILD: using $NVMRC_DIR/nvmrc.sh"
 else
-  echo "BUILD: unable to find: $NVMRC_DIR/nvmrc.sh"
+  echo "BUILD: unable to find: $NVMRC_DIR/nvmrc.sh" >&2
   exit 1
 fi
+
 # ensure desired node version is installed using .nvmrc in base dir of app
 $NVMRC_DIR/nvmrc.sh
 NVMRC_STATUS=$?
 if [[ ("$NVMRC_STATUS" != 0) ]]; then
   echo "$NVMRC_DIR/nvmrc.sh returned: $NVMRC_STATUS"
   exit $NVMRC_STATUS
+fi
+if [[ (-x "$NVM_DIR/nvm-exec") ]]; then
+  echo "BUILD: using $NVM_DIR/nvm-exec"
+else
+  echo "BUILD: unable to find: $NVM_DIR/nvm-exec" >&2
+  exit 1
 fi
 
 # enable nvm (alt "$NVM_DIR/nvm-exec node" or "$NVM_DIR/nvm-exec npm")
