@@ -50,21 +50,21 @@ fi
 
 # enable nvm (alt "$NVM_DIR/nvm-exec node" or "$NVM_DIR/nvm-exec npm")
 # source ~/.bashrc
-NVM_CMD=`[[ (-z "$NVM_DIR") ]] && echo $NVM_DIR/nvm-exec || echo "/opt"`
+NVM_EDIR=`[[ (-z "$NVM_DIR") ]] && echo $NVM_DIR || echo "$HOME/.nvm"`
 #if [[ (-x "$(command -v nvm)") ]]; then
-if [[ (-x "$($NVM_DIR/nvm-exec)") ]]; then
-  echo "BUILD: executing nvm commands"
+if [[ (-x "$NVM_EDIR/nvm-exec") ]]; then
+  echo "BUILD: executing $NVM_EDIR/nvm-exec commands"
 else
-  echo "BUILD: nvm command is not accessible" >&2
+  echo "BUILD: $NVM_EDIR/nvm-exec command is not accessible" >&2
   exit 1
 fi
 # run node commands using app version in .nvmrc
-echo 'BUILD: node version:' && $NVM_DIR/nvm-exec node -v
-echo 'BUILD: npm version:' && $NVM_DIR/nvm-exec npm -v
-$NVM_DIR/nvm-exec $CMD_INSTALL
-$NVM_DIR/nvm-exec $CMD_TEST
+echo 'BUILD: node version:' && $NVM_EDIR/nvm-exec node -v
+echo 'BUILD: npm version:' && $NVM_EDIR/nvm-exec npm -v
+$NVM_EDIR/nvm-exec $CMD_INSTALL
+$NVM_EDIR/nvm-exec $CMD_TEST
 if [[ (-n "$CMD_BUNDLE") ]]; then
-  $NVM_DIR/nvm-exec $CMD_BUNDLE
+  $NVM_EDIR/nvm-exec $CMD_BUNDLE
 else
   echo "BUILD: No bundling performed"
 fi
