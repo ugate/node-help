@@ -56,7 +56,7 @@ fi
 #NVM_EDIR=`[[ (-n "$NVM_DIR") ]] && echo $NVM_DIR || echo "$HOME/.nvm"`
 #if [[ (-x "$NVM_EDIR/nvm-exec") ]]; then
 source ~/.bashrc
-if [[ (-x "$(command -v nvm)") ]]; then
+if [[ ("$(command -v nvm)" == "nvm") ]]; then
   echo "BUILD: executing nvm commands"
 else
   echo "BUILD: nvm command is not accessible for execution" >&2
@@ -64,9 +64,12 @@ else
 fi
 # run node commands using app version in .nvmrc
 nvm use "$NVMRC_VER"
+echo "BUILD: \"$CMD_INSTALL\""
 $CMD_INSTALL
+echo "BUILD: \"$CMD_TEST\""
 $CMD_TEST
 if [[ (-n "$CMD_BUNDLE") ]]; then
+  echo "BUILD: \"$CMD_BUNDLE\""
   $CMD_BUNDLE
 else
   echo "BUILD: No bundling performed"
