@@ -15,10 +15,10 @@
 
 APP_NAME=`[[ (-n "$1") ]] && echo $1`
 APP_DIR=`[[ (-n "$2") ]] && echo $2 || echo $PWD`
-CMD_INSTALL=`[[ (-z "$3") ]] && echo $3 || echo "npm ci"`
-CMD_TEST=`[[ (-z "$4") ]] && echo $4 || echo "npm test"`
-CMD_BUNDLE=`[[ (-z "$5") ]] && echo $5 || echo ""`
-NVMRC_DIR=`[[ (-z "$6") ]] && echo $6 || echo "/opt"`
+CMD_INSTALL=`[[ (-n "$3") ]] && echo $3 || echo "npm ci"`
+CMD_TEST=`[[ (-n "$4") ]] && echo $4 || echo "npm test"`
+CMD_BUNDLE=`[[ (-n "$5") ]] && echo $5 || echo ""`
+NVMRC_DIR=`[[ (-n "$6") ]] && echo $6 || echo "/opt"`
 
 if [[ (-n "$APP_NAME") ]]; then
   echo "BUILD: using app name $APP_NAME"
