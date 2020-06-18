@@ -41,11 +41,15 @@ else
 fi
 
 # ensure desired node version is installed using .nvmrc in base dir of app
-$NVMRC_DIR/nvmrc.sh
+# source nvmrc.sh so we have access to $NVMRC_VER
+. $NVMRC_DIR/nvmrc.sh $PWD
 NVMRC_STATUS=$?
 if [[ ("$NVMRC_STATUS" != 0) ]]; then
-  echo "$NVMRC_DIR/nvmrc.sh returned: $NVMRC_STATUS"
+  echo "BUILD: $NVMRC_DIR/nvmrc.sh returned: $NVMRC_STATUS" >&2
   exit $NVMRC_STATUS
+elif [[ (-z "$NVMRC_VER") ]]; then
+  echo "BUILD: $NVMRC_DIR/nvmrc.sh failed to set \$NVMRC_VER" >&2
+  exit 1
 fi
 
 # enable nvm (alt "$NVM_DIR/nvm-exec node" or "$NVM_DIR/nvm-exec npm")
@@ -59,6 +63,7 @@ else
   exit 1
 fi
 # run node commands using app version in .nvmrc
+nvm use "$NVMRC_VER"
 echo 'BUILD: node version:' && $NVM_EDIR/nvm-exec node -v
 echo 'BUILD: npm version:' && $NVM_EDIR/nvm-exec npm -v
 $NVM_EDIR/nvm-exec $CMD_INSTALL
