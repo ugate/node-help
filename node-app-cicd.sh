@@ -67,7 +67,7 @@ elif [[ (-z "$APP_DIR") ]]; then
   exit 1
 else
   # DEPLOY: create new app dir
-  mkdir -p $APP_DIR
+  sudo mkdir -p $APP_DIR
   sudo chmod a+r $APP_DIR
 fi
 if [[ ("$EXEC_TYPE" == "DEPLOY") ]]; then
