@@ -10,7 +10,7 @@
 ##################################################################################
 # $1 Execution type (either BUILD or DEPLOY)
 # $2 Node.js app name (required)
-# $3 Node.js app dir (defaults to $PWD)
+# $3 Node.js app dir (defaults to "")
 # $4 nvmrc.sh directory (defaults to "/opt")
 # $5 npm/node ci/install command (defaults to "npm ci")
 # $6 npm/node test command (defaults to "npm test", optional)
@@ -19,12 +19,26 @@
 
 EXEC_TYPE=`[[ ("$1" == "BUILD" || "$1" == "DEPLOY") ]] && echo $1 || echo ""`
 APP_NAME=`[[ (-n "$2") ]] && echo $2`
-APP_DIR=`[[ (-n "$3") ]] && echo $3 || echo $PWD`
+APP_DIR=`[[ (-n "$3") ]] && echo $3 || echo ""`
 NVMRC_DIR=`[[ (-n "$4") ]] && echo $4 || echo "/opt"`
 CMD_INSTALL=`[[ (-n "$5") ]] && echo $5 || echo "npm ci"`
 CMD_TEST=`[[ (-n "$6") ]] && echo $6 || echo "npm test"`
 CMD_BUNDLE=`[[ (-n "$7") ]] && echo $7 || echo ""`
 APP_TMP=`[[ (-n "$8") ]] && echo $8 || echo /tmp`
+
+execCmdCICD () {
+  if [[ (-n "$1") ]]; then
+    echo "$EXEC_TYPE: \"$1\""
+    $1
+    local CMD_STATUS=$?
+    if [[ ("$CMD_STATUS" != 0) ]]; then
+      echo "$EXEC_TYPE: $2 \"$1\" returned: $CMD_STATUS" >&2
+      exit $CMD_STATUS
+    fi
+  else
+    echo "$EXEC_TYPE: No $2 being performed"
+  fi
+}
 
 if [[ (-n "$EXEC_TYPE") ]]; then
   echo "$EXEC_TYPE: starting..."
@@ -40,21 +54,39 @@ else
 fi
 if [[ (-d "$APP_DIR") ]]; then
   echo "$EXEC_TYPE: using app dir $APP_DIR"
-  # change to app dir to execute node/npm commands
-  cd $APP_DIR
+  if [[ ("$EXEC_TYPE" == "DEPLOY") ]]; then
+    echo "$EXEC_TYPE: backing up $APP_DIR ..."
+    tar -czvf $APP_TMP/$APP_NAME-backup-`date +%Y%m%d_%H%M%S`.tar.gz $APP_DIR/*
+    rm -rf $APP_DIR/*
+  fi
 elif [[ ("$EXEC_TYPE" == "BUILD") ]]; then
   echo "$EXEC_TYPE: unable to find dir $APP_DIR" >&2
   exit 1
-fi
-if [[ (-x "$NVMRC_DIR/nvmrc.sh") ]]; then
-  echo "$EXEC_TYPE: using $NVMRC_DIR/nvmrc.sh"
-else
-  echo "$EXEC_TYPE: unable to find: $NVMRC_DIR/nvmrc.sh" >&2
+elif [[ (-z "$APP_DIR") ]]; then
+  echo "$EXEC_TYPE: app dir is required" >&2
   exit 1
+else
+  # DEPLOY: create new app dir
+  mkdir -p $APP_DIR
+  sudo chmod a+r $APP_DIR
 fi
+if [[ ("$EXEC_TYPE" == "DEPLOY") ]]; then
+  # extract app contents into the app dir
+  tar --warning=no-timestamp -xzvf $APP_TMP/$APP_NAME.tar.gz -C $APP_DIR
+  # remove extracted app archive
+  rm -f $APP_TMP/$APP_NAME.tar.gz
+fi
+# change to app dir to execute node/npm commands
+cd $APP_DIR
 
 # ensure desired node version is installed using .nvmrc in base dir of app
-# source nvmrc.sh so we have access to $NVMRC_VER
+if [[ (-x "$NVMRC_DIR/nvmrc.sh") ]]; then
+  echo "$EXEC_TYPE: using nvmrc.sh located at \"$NVMRC_DIR/nvmrc.sh\""
+else
+  echo "$EXEC_TYPE: unable to find: \"$NVMRC_DIR/nvmrc.sh\"" >&2
+  exit 1
+fi
+# source nvmrc.sh so we have access to $NVMRC_VER that is exported by nvmrc.sh
 . $NVMRC_DIR/nvmrc.sh $PWD
 CMD_STATUS=$?
 if [[ ("$CMD_STATUS" != 0) ]]; then
@@ -79,58 +111,22 @@ fi
 # run node commands using app version in .nvmrc
 nvm use "$NVMRC_VER"
 
-# DEPLOY: handle archive extraction
-if [[ ("$EXEC_TYPE" == "DEPLOY") ]]; then
-  # Backup existing app deployment
-  if [ -d "$APP_DIR" ]; then
-    echo "$EXEC_TYPE: Backing up $APP_DIR ..."
-    tar -czvf $APP_TMP/$APP_NAME-backup-`date +%Y%m%d_%H%M%S`.tar.gz $APP_DIR/*
-    rm -rf $APP_DIR/*
-  else
-    mkdir -p $APP_DIR
-    sudo chmod a+r $APP_DIR
-  fi
-  # change to app dir to execute node/npm commands
-  cd $APP_DIR
-  # Extract app
-  tar --warning=no-timestamp -xzvf $APP_TMP/$APP_NAME.tar.gz -C $APP_DIR
-  # Remove app archive
-  rm -f $APP_TMP/$APP_NAME.tar.gz
-fi
-
-# execute install
-echo "$EXEC_TYPE: \"$CMD_INSTALL\""
-$CMD_INSTALL
-
-# execute tests
-if [[ (-n "$CMD_TEST") ]]; then
-  echo "$EXEC_TYPE: \"$CMD_TEST\""
-  $CMD_TEST
-  CMD_STATUS=$?
-  if [[ ("$CMD_STATUS" != 0) ]]; then
-    echo "$EXEC_TYPE: \"$CMD_TEST\" returned: $CMD_STATUS" >&2
-    exit $CMD_STATUS
-  fi
-else
-  echo "$EXEC_TYPE: No tests being performed"
-fi
-
-# execute bundle/debundle
-if [[ (-n "$CMD_BUNDLE") ]]; then
-  echo "$EXEC_TYPE: \"$CMD_BUNDLE\""
-  $CMD_BUNDLE
-  CMD_STATUS=$?
-  if [[ ("$CMD_STATUS" != 0) ]]; then
-    echo "$EXEC_TYPE: \"$CMD_BUNDLE\" returned: $CMD_STATUS" >&2
-    exit $CMD_STATUS
-  fi
-else
-  echo "$EXEC_TYPE: No bundling/debundling being performed"
-fi
-
-# BUILD: create app archive
 if [[ ("$EXEC_TYPE" == "BUILD") ]]; then
+  # execute install
+  execCmdCICD "$CMD_INSTALL" "ci/install"
+  # execute tests
+  execCmdCICD "$CMD_TEST" "tests"
+  # execute bundle
+  execCmdCICD "$CMD_BUNDLE" "bundling"
+  # create app archive
   tar --exclude='./*git*' --exclude='./node_modules' --exclude='*.gz' -czvf $APP_NAME.tar.gz .
+else
+  # execute debundle
+  execCmdCICD "$CMD_BUNDLE" "debundling"
+  # execute install
+  execCmdCICD "$CMD_INSTALL" "ci/install"
+  # execute tests
+  execCmdCICD "$CMD_TEST" "tests"
 fi
 
 echo "$EXEC_TYPE: Success!"
