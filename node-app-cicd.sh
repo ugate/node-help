@@ -40,8 +40,9 @@ else
 fi
 if [[ (-d "$APP_DIR") ]]; then
   echo "$EXEC_TYPE: using app dir $APP_DIR"
+  # change to app dir to execute node/npm commands
   cd $APP_DIR
-else
+elif [[ ("$EXEC_TYPE" == "BUILD") ]]; then
   echo "$EXEC_TYPE: unable to find dir $APP_DIR" >&2
   exit 1
 fi
@@ -89,14 +90,13 @@ if [[ ("$EXEC_TYPE" == "DEPLOY") ]]; then
     mkdir -p $APP_DIR
     sudo chmod a+r $APP_DIR
   fi
+  # change to app dir to execute node/npm commands
+  cd $APP_DIR
   # Extract app
   tar --warning=no-timestamp -xzvf $APP_TMP/$APP_NAME.tar.gz -C $APP_DIR
   # Remove app archive
   rm -f $APP_TMP/$APP_NAME.tar.gz
 fi
-
-# change to app dir to execute node/npm commands
-cd $APP_DIR
 
 # execute install
 echo "$EXEC_TYPE: \"$CMD_INSTALL\""
