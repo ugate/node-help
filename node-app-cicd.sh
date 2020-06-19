@@ -68,7 +68,7 @@ elif [[ (-z "$APP_DIR") ]]; then
 else
   # DEPLOY: create new app dir
   sudo mkdir -p $APP_DIR
-  sudo chmod a+r $APP_DIR
+  sudo chown -hR $USER $APP_DIR
 fi
 if [[ ("$EXEC_TYPE" == "DEPLOY") ]]; then
   if [[ (-f "$APP_TMP/$APP_NAME.tar.gz") ]]; then
