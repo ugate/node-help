@@ -33,7 +33,7 @@ execCmdCICD () {
     local CMD_STATUS=$?
     if [[ ("$CMD_STATUS" != 0) ]]; then
       echo "$EXEC_TYPE: $2 \"$1\" returned: $CMD_STATUS" >&2
-      exit $CMD_STATUS
+      return $CMD_STATUS
     fi
   else
     echo "$EXEC_TYPE: No $2 being performed"
@@ -56,7 +56,7 @@ if [[ (-d "$APP_DIR") ]]; then
   echo "$EXEC_TYPE: using app dir $APP_DIR"
   if [[ ("$EXEC_TYPE" == "DEPLOY") ]]; then
     echo "$EXEC_TYPE: backing up $APP_DIR ..."
-    tar -czvf $APP_TMP/$APP_NAME-backup-`date +%Y%m%d_%H%M%S`.tar.gz $APP_DIR/*
+    tar -czf $APP_TMP/$APP_NAME-backup-`date +%Y%m%d_%H%M%S`.tar.gz $APP_DIR/*
     rm -rf $APP_DIR/*
   fi
 elif [[ ("$EXEC_TYPE" == "BUILD") ]]; then
@@ -120,19 +120,25 @@ nvm use "$NVMRC_VER"
 if [[ ("$EXEC_TYPE" == "BUILD") ]]; then
   # execute install
   execCmdCICD "$CMD_INSTALL" "ci/install"
+  [[ $? != 0 ]] && exit 1
   # execute tests
   execCmdCICD "$CMD_TEST" "tests"
+  [[ $? != 0 ]] && exit 1
   # execute bundle
   execCmdCICD "$CMD_BUNDLE" "bundling"
+  [[ $? != 0 ]] && exit 1
   # create app archive
   tar --exclude='./*git*' --exclude='./node_modules' --exclude='*.gz' -czvf $APP_NAME.tar.gz .
 else
   # execute debundle
   execCmdCICD "$CMD_BUNDLE" "debundling"
+  [[ $? != 0 ]] && exit 1
   # execute install
   execCmdCICD "$CMD_INSTALL" "ci/install"
+  [[ $? != 0 ]] && exit 1
   # execute tests
   execCmdCICD "$CMD_TEST" "tests"
+  [[ $? != 0 ]] && exit 1
 fi
 
 echo "$EXEC_TYPE: Success!"
