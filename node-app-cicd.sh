@@ -71,11 +71,12 @@ else
   sudo chown -hR $USER $APP_DIR
 fi
 if [[ ("$EXEC_TYPE" == "DEPLOY") ]]; then
+  sudo chown -hR $USER $APP_DIR
   if [[ (-f "$APP_TMP/$APP_NAME.tar.gz") ]]; then
-    # extract app contents into the app dir
+    echo "$EXEC_TYPE: extracting app contents from \"$APP_TMP/$APP_NAME.tar.gz\" to \"$APP_DIR\""
     tar --warning=no-timestamp -xzvf $APP_TMP/$APP_NAME.tar.gz -C $APP_DIR
     # remove extracted app archive
-    rm -f $APP_TMP/$APP_NAME.tar.gz
+    sudo rm -f $APP_TMP/$APP_NAME.tar.gz
   else
     echo "$EXEC_TYPE: missing archive at $APP_TMP/$APP_NAME.tar.gz" >&2
     exit 1
