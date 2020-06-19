@@ -83,8 +83,8 @@ if [[ ("$EXEC_TYPE" == "DEPLOY") ]]; then
   # Backup existing app deployment
   if [ -d "$APP_DIR" ]; then
     echo "$EXEC_TYPE: Backing up $APP_DIR ..."
-    tar -czvf $APP_TMP/$APP_NAME-backup-`date +%Y%m%d_%H%M%S`.tar.gz $APP_PATH/*
-    rm -rf $APP_PATH/*
+    tar -czvf $APP_TMP/$APP_NAME-backup-`date +%Y%m%d_%H%M%S`.tar.gz $APP_DIR/*
+    rm -rf $APP_DIR/*
   else
     mkdir -p $APP_DIR
     sudo chmod a+r $APP_DIR
