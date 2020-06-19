@@ -81,17 +81,16 @@ nvm use "$NVMRC_VER"
 # DEPLOY: handle archive extraction
 if [[ ("$EXEC_TYPE" == "DEPLOY") ]]; then
   # Backup existing app deployment
-  APP_PATH=$APP_DIR/$APP_NAME
-  if [ -d "$APP_PATH" ]; then
-    echo "$EXEC_TYPE: Backing up $APP_PATH ..."
+  if [ -d "$APP_DIR" ]; then
+    echo "$EXEC_TYPE: Backing up $APP_DIR ..."
     tar -czvf $APP_TMP/$APP_NAME-backup-`date +%Y%m%d_%H%M%S`.tar.gz $APP_PATH/*
     rm -rf $APP_PATH/*
   else
-    mkdir -p $APP_PATH
-    sudo chmod a+r $APP_PATH
+    mkdir -p $APP_DIR
+    sudo chmod a+r $APP_DIR
   fi
   # Extract app
-  tar --warning=no-timestamp -xzvf $APP_TMP/$APP_NAME.tar.gz -C $APP_PATH
+  tar --warning=no-timestamp -xzvf $APP_TMP/$APP_NAME.tar.gz -C $APP_DIR
   # Remove app archive
   rm -f $APP_TMP/$APP_NAME.tar.gz
 fi
