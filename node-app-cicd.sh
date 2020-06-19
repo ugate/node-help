@@ -71,10 +71,14 @@ else
   sudo chmod a+r $APP_DIR
 fi
 if [[ ("$EXEC_TYPE" == "DEPLOY") ]]; then
-  # extract app contents into the app dir
-  tar --warning=no-timestamp -xzvf $APP_TMP/$APP_NAME.tar.gz -C $APP_DIR
-  # remove extracted app archive
-  rm -f $APP_TMP/$APP_NAME.tar.gz
+  if [[ (-f "$APP_TMP/$APP_NAME.tar.gz") ]]; then
+    # extract app contents into the app dir
+    tar --warning=no-timestamp -xzvf $APP_TMP/$APP_NAME.tar.gz -C $APP_DIR
+    # remove extracted app archive
+    rm -f $APP_TMP/$APP_NAME.tar.gz
+  else
+    echo "$EXEC_TYPE: missing archive at $APP_TMP/$APP_NAME.tar.gz" >&2
+  fi
 fi
 # change to app dir to execute node/npm commands
 cd $APP_DIR
