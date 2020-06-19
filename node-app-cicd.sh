@@ -78,6 +78,7 @@ if [[ ("$EXEC_TYPE" == "DEPLOY") ]]; then
     rm -f $APP_TMP/$APP_NAME.tar.gz
   else
     echo "$EXEC_TYPE: missing archive at $APP_TMP/$APP_NAME.tar.gz" >&2
+    exit 1
   fi
 fi
 # change to app dir to execute node/npm commands
