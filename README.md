@@ -61,12 +61,6 @@ There are a few different options for database connectivity within Node for DBMS
 | Oracle        | [sqler-oracle](https://ugate.github.io/sqler-oracle)                                           | [oracledb](https://www.npmjs.com/package/oracledb)
 | ODBC          | [sqler-odbc](https://ugate.github.io/sqler-odbc)                                               | [odbc](https://www.npmjs.com/package/odbc) ([see ODBC](ODBC.md))
 
-SQL Server - sqler-mssql
-Oracle - sqler-oracle
-MriaDB and/or MySQL - sqler-mdb
-PostgreSQL - sqler-postgres
-ODBC - sqler-odbc
-
 ## Application Installation/Deployment
 Each node application can be scaled vertically by deploying multiple node application processes that match the number of physical CPUs allocated on the physical server where the application resides. Each of those processes should reference the same code base and remain stateless throughout the application's life-cycle. This helps to ensure consistency across application deployments and enables the possibility for zero-downtime for potential application upgrades.
 
