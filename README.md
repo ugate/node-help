@@ -53,11 +53,19 @@ yum -y install nodejs
 
 There are a few different options for database connectivity within Node for DBMS, NoSQL, GDB (Graph Database), etc.  When dealing with DBMS, many vendors like Oracle, MS SQL Server, etc. provide their own native and/or protocol-specific drivers. Native drivers provided by implementing vendors are the preferred method for DBMS connectivity within Node since they provide maximum performance and feature sets. However, there are some vendors that provide alternative ODBC drivers, OLE DB drivers, etc. which can provide a near-native experience when direct native driver implementations are not provided by a specific database vendor. Below are few of the most commonly used database drivers provided by various database vendors:
 
-| DBMS          | Node.js Module                                                                                 | Language
+| DBMS          | Node.js Module                                                                                 | Driver
 | :---          | :---:                                                                                          | :---
-| Oracle        | [oracledb](https://oracle.github.io/node-oracledb/)                                            | C/C++
-| MS SQL Server | [tedious](https://docs.microsoft.com/en-us/sql/connect/node-js/node-js-driver-for-sql-server)  | C/C++/[MS-TDS](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-tds/b46a581a-39de-4745-b076-ec4dbb7d13ec)
-| ODBC          | [odbc](https://www.npmjs.com/package/odbc)                                                     | C/C++ ([see ODBC](ODBC.md))
+| PostgreSQL    | [sqler-postgres](https://ugate.github.io/sqler-postgres)                                       | [pg](https://www.npmjs.com/package/pg)
+| MySQL/MariaDB | [sqler-mdb](https://ugate.github.io/sqler-mdb)                                                 | [mariadb](https://www.npmjs.com/package/mariadb)
+| MS SQL Server | [sqler-mssql](https://ugate.github.io/sqler-mssql)                                             | [mssql](https://www.npmjs.com/package/mssql)
+| Oracle        | [sqler-oracle](https://ugate.github.io/sqler-oracle)                                           | [oracledb](https://www.npmjs.com/package/oracledb)
+| ODBC          | [sqler-odbc](https://ugate.github.io/sqler-odbc)                                               | [odbc](https://www.npmjs.com/package/odbc) ([see ODBC](ODBC.md))
+
+SQL Server - sqler-mssql
+Oracle - sqler-oracle
+MriaDB and/or MySQL - sqler-mdb
+PostgreSQL - sqler-postgres
+ODBC - sqler-odbc
 
 ## Application Installation/Deployment
 Each node application can be scaled vertically by deploying multiple node application processes that match the number of physical CPUs allocated on the physical server where the application resides. Each of those processes should reference the same code base and remain stateless throughout the application's life-cycle. This helps to ensure consistency across application deployments and enables the possibility for zero-downtime for potential application upgrades.
