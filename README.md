@@ -8,8 +8,10 @@ Installing [nvm](https://github.com/nvm-sh/nvm) will allow switching back and fo
 
 ### Local user nvm (install/upgrade):
 ```
+# see https://access.redhat.com/sites/default/files/attachments/rh_yum_cheatsheet_1214_jcs_print-1.pdf
 sudo su
 # install/upgrade C/C++ compiler for native Node modules
+# apt-get install -y gcc-c++ make
 yum install -y gcc-c++ make
 # optionally switch to the user acct where nvm will be installed
 # su someuser
@@ -31,9 +33,11 @@ To install/upgrade Node globally for accessibility across all users, follow the 
 
 ### Global Node Install:
 ```sh
+# see https://access.redhat.com/sites/default/files/attachments/rh_yum_cheatsheet_1214_jcs_print-1.pdf
 # globally install single version of node
 sudo su
 curl -sL https://rpm.nodesource.com/setup_##.x | sudo -E bash -
+# apt-get intall -y nodejs
 yum install -y nodejs
 ```
 
@@ -171,4 +175,5 @@ sudo systemctl status redis.service
 redis-cli -a 'REDIS_PASSWORD_HERE' ping
 ```
 
-## [Continuous Integration/Deployment](CICD.md):
+# Continuous Integration/Deployment
+An automated/portable shell [node-app.sh](https://github.com/ugate/repo/tree/master/nodejs) can be used for CICD.
